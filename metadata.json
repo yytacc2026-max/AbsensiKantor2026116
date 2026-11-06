@@ -1,0 +1,6 @@
+{
+  "name": "Fadiya Kencana",
+  "description": "Aplikasi Absensi Karyawan berbasis offline-first dengan alur Admin dan Karyawan sesuai flowchart.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

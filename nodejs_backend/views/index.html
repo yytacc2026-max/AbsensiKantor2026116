@@ -1,0 +1,3897 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fadiya Kencana - Dashboard Admin Presensi & HRIS</title>
+  <!-- Google Fonts & Bootstrap 5 & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CDN jsPDF & jsPDF-AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Flatpickr (Kalender Interaktif Modern yang Bisa Digeser) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
+  <style>
+    :root {
+      --primary-teal: #059669;
+      --primary-teal-hover: #047857;
+      --primary-teal-light: rgba(16, 185, 129, 0.20);
+      --primary-mint: #10b981;
+      --accent-mint: #34d399;
+      --accent-amber: #f59e0b;
+      --bg-body: #03120d;
+      --sidebar-bg: linear-gradient(180deg, #05261d 0%, #031812 60%, #02120e 100%);
+      --glass-card: linear-gradient(145deg, rgba(6, 78, 59, 0.55) 0%, rgba(4, 38, 29, 0.88) 100%);
+      --glass-card-hover: linear-gradient(145deg, rgba(8, 98, 74, 0.68) 0%, rgba(5, 48, 37, 0.95) 100%);
+      --card-border: rgba(52, 211, 153, 0.24);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      background-image:
+        radial-gradient(circle at 14% 10%, rgba(16, 185, 129, 0.22), transparent 38%),
+        radial-gradient(circle at 86% 18%, rgba(5, 150, 105, 0.24), transparent 36%),
+        radial-gradient(circle at 50% 55%, rgba(4, 78, 56, 0.20), transparent 50%),
+        radial-gradient(circle at 20% 85%, rgba(16, 185, 129, 0.16), transparent 42%);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sidebar Styling (Cyber Emerald & Jade Mint Theme) */
+    .sidebar {
+      min-height: 100vh;
+      background: rgba(4, 24, 18, 0.95);
+      backdrop-filter: blur(18px);
+      color: #fff;
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar .brand-badge {
+      background: linear-gradient(135deg, rgba(4, 47, 36, 0.6) 0%, rgba(5, 150, 105, 0.35) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar .nav-link {
+      color: #94a3b8;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar .nav-link:hover {
+      color: #6ee7b7;
+      background-color: rgba(16, 185, 129, 0.12);
+      transform: translateX(3px);
+    }
+
+    .sidebar .nav-link.active {
+      background: linear-gradient(135deg, #064e3b 0%, #059669 48%, #10b981 100%) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.40);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    /* Hero Banner: Cyber Emerald & Jade Gradient with Topographic Ornaments */
+    .schedule-banner {
+      background: linear-gradient(145deg, #042f24 0%, #064e3b 30%, #047857 65%, #059669 88%, #10b981 100%);
+      color: #ffffff;
+      border-radius: 26px;
+      padding: 24px 28px;
+      box-shadow: 0 18px 45px rgba(6, 78, 59, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .schedule-banner::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -30px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(110, 231, 183, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .schedule-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: 30%;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.30) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .schedule-banner .topography-svg {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 480px;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.65;
+      z-index: 1;
+    }
+
+    .schedule-banner-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Modern Cyber Emerald Glass Card & Stat Widgets */
+    .card-modern {
+      position: relative;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(16, 185, 129, 0.14), transparent 45%),
+        radial-gradient(circle at 88% 90%, rgba(5, 150, 105, 0.12), transparent 50%),
+        linear-gradient(160deg, rgba(6, 78, 59, 0.50) 0%, rgba(4, 34, 26, 0.94) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.28);
+      border-radius: 24px;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      color: var(--text-main);
+      overflow: visible;
+    }
+    .card-modern.filter-panel {
+      overflow: visible !important;
+      z-index: 50;
+    }
+    .card-modern::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, transparent, #10b981 30%, #34d399 70%, transparent);
+      z-index: 1;
+    }
+    .card-modern:hover {
+      border-color: rgba(52, 211, 153, 0.48);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.48), 0 0 25px rgba(16, 185, 129, 0.18);
+    }
+
+    .stat-widget {
+      position: relative;
+      overflow: hidden;
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.20), transparent 45%),
+        linear-gradient(145deg, rgba(6, 78, 59, 0.60) 0%, rgba(4, 40, 30, 0.94) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.30);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Dekorasi Watermark Topografi & Resonance Rings di Pojok Kartu Statistik */
+    .stat-widget::before {
+      content: '';
+      position: absolute;
+      top: -25px;
+      right: -25px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .stat-widget::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      bottom: -18px;
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(52, 211, 153, 0.24);
+      pointer-events: none;
+    }
+    .stat-widget:hover {
+      border-color: rgba(52, 211, 153, 0.65);
+      transform: translateY(-4px);
+      box-shadow: 0 18px 38px rgba(4, 18, 14, 0.65), 0 0 25px rgba(16, 185, 129, 0.25);
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .stat-icon.blue { background-color: rgba(56, 189, 248, 0.16); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.28); }
+    .stat-icon.green {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.5) 0%, rgba(16, 185, 129, 0.3) 100%);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.45);
+    }
+    .stat-icon.amber { background-color: rgba(251, 191, 36, 0.16); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.28); }
+    .stat-icon.red { background-color: rgba(251, 113, 133, 0.16); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.28); }
+
+    /* Custom Dark Glass Table Styling */
+    .table-custom {
+      margin-bottom: 0;
+      color: var(--text-main);
+      --bs-table-bg: transparent;
+      --bs-table-color: #f8fafc;
+      --bs-table-hover-bg: rgba(16, 185, 129, 0.08);
+      --bs-table-hover-color: #ffffff;
+    }
+    .table-custom thead th {
+      background-color: rgba(255, 255, 255, 0.03);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--card-border);
+      white-space: nowrap;
+    }
+    .table-custom tbody td {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      vertical-align: middle;
+      color: #e2e8f0;
+    }
+    .table-custom tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Modal Rekapitulasi Presensi & Kedisiplinan Styling */
+    #modalRekapPayroll .modal-header {
+      position: relative;
+      overflow: hidden;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      background: linear-gradient(145deg, #042f24 0%, #064e3b 30%, #047857 65%, #059669 88%, #10b981 100%) !important;
+      border-bottom: 1px solid rgba(52, 211, 153, 0.35) !important;
+    }
+    #modalRekapPayroll .modal-header::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -30px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(110, 231, 183, 0.28) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #modalRekapPayroll .modal-header::after {
+      content: '';
+      position: absolute;
+      bottom: -50px;
+      left: 20%;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #modalRekapPayroll .modal-header .topography-svg {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 480px;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.75;
+      z-index: 1;
+    }
+    #modalRekapPayroll .modal-header-content {
+      position: relative;
+      z-index: 2;
+    }
+    #modalRekapPayroll .modal-body {
+      background: #03140e !important;
+    }
+    #modalRekapPayroll .card-filter-rekap {
+      background: linear-gradient(145deg, rgba(6, 78, 59, 0.5) 0%, rgba(4, 38, 29, 0.9) 100%) !important;
+      border: 1px solid rgba(52, 211, 153, 0.3) !important;
+      border-radius: 18px;
+    }
+    #modalRekapPayroll .rekap-kpi-card {
+      background: linear-gradient(145deg, rgba(6, 78, 59, 0.55) 0%, rgba(4, 38, 29, 0.92) 100%) !important;
+      border: 1px solid rgba(52, 211, 153, 0.3) !important;
+      border-radius: 14px;
+      color: #ffffff !important;
+    }
+    #payrollPreviewTable {
+      --bs-table-bg: transparent !important;
+      --bs-table-color: #f8fafc !important;
+      --bs-table-hover-bg: rgba(16, 185, 129, 0.12) !important;
+      --bs-table-hover-color: #ffffff !important;
+      background-color: transparent !important;
+      color: #f8fafc !important;
+    }
+    #payrollPreviewTable thead th {
+      background-color: #022018 !important;
+      color: #a7f3d0 !important;
+      border-bottom: 2px solid #10b981 !important;
+      font-weight: 700;
+      font-size: 11.5px;
+      letter-spacing: 0.5px;
+      padding: 10px 8px;
+    }
+    #payrollPreviewTable tbody td {
+      background-color: #041913 !important;
+      color: #f8fafc !important;
+      border-bottom: 1px solid rgba(52, 211, 153, 0.15) !important;
+      font-size: 12.5px;
+      padding: 10px 8px;
+      vertical-align: middle;
+    }
+    #payrollPreviewTable tbody tr:hover td {
+      background-color: rgba(6, 78, 59, 0.6) !important;
+      color: #ffffff !important;
+    }
+    #payrollPreviewTable tfoot tr td {
+      background-color: #022018 !important;
+      color: #f8fafc !important;
+      border-top: 2px solid #10b981 !important;
+      font-weight: 700;
+      padding: 10px 8px;
+    }
+
+    /* Avatars & Badges */
+    .avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.55), rgba(16, 185, 129, 0.35));
+      color: #34d399;
+      border: 1.5px solid rgba(52, 211, 153, 0.45);
+      font-size: 13.5px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .badge-dept {
+      background-color: rgba(255, 255, 255, 0.06);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    /* Glowing Neon Status Pills */
+    .pill-status {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 13px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .pill-status.hadir {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.35) 0%, rgba(16, 185, 129, 0.25) 100%);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.45);
+    }
+    .pill-status.terlambat { background-color: rgba(244, 63, 94, 0.16); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.35); }
+    .pill-status.izin { background-color: rgba(245, 158, 11, 0.16); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.35); }
+    .pill-status.alpa { background-color: rgba(148, 163, 184, 0.14); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.25); }
+    .pill-status.lupa-pulang { background-color: rgba(255, 107, 44, 0.16); color: #ff9f43; border: 1px solid rgba(255, 159, 67, 0.35); }
+    .pill-status.pending { background-color: rgba(245, 158, 11, 0.16); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.35); }
+    .pill-status.ditolak { background-color: rgba(244, 63, 94, 0.16); color: #fb7185; border: 1px solid rgba(251, 113, 133, 0.35); }
+
+    /* GPS Pill Button */
+    .btn-gps {
+      background-color: rgba(20, 184, 166, 0.14);
+      color: #2dd4bf;
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 5px 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+    .btn-gps:hover {
+      background-color: rgba(20, 184, 166, 0.28);
+      color: #5eead4;
+      transform: translateY(-1px);
+    }
+    .btn-gps.pulang {
+      background-color: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+    .btn-gps.pulang:hover {
+      background-color: rgba(59, 130, 246, 0.28);
+      color: #93c5fd;
+      transform: translateY(-1px);
+    }
+
+    /* Buttons: Pill Gradient Button */
+    .btn-teal {
+      background: linear-gradient(135deg, #064e3b 0%, #059669 48%, #10b981 100%);
+      color: #fff !important;
+      font-weight: 700;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 20px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.35);
+    }
+    .btn-teal:hover {
+      background: linear-gradient(135deg, #04382a 0%, #047857 48%, #059669 100%);
+      color: #fff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.48);
+    }
+
+    /* Dark Mode Overrides for Bootstrap Utility Classes & Inputs */
+    .text-dark { color: #f8fafc !important; }
+    .text-muted, .text-secondary { color: #94a3b8 !important; }
+    .bg-light { background-color: rgba(255, 255, 255, 0.04) !important; color: #f8fafc !important; }
+    .border { border-color: var(--card-border) !important; }
+    .form-control, .form-select, .input-group-text {
+      background-color: #061a14 !important;
+      border-color: rgba(52, 211, 153, 0.22) !important;
+      color: #f8fafc !important;
+      border-radius: 12px;
+    }
+    .form-control::placeholder { color: #64748b !important; }
+    .form-control:focus, .form-select:focus {
+      border-color: #10b981 !important;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+      background-color: #08241b !important;
+    }
+    .modal-content {
+      background-color: #071f18 !important;
+      color: #f8fafc !important;
+      border: 1px solid rgba(52, 211, 153, 0.28) !important;
+      border-radius: 26px !important;
+      overflow: hidden;
+    }
+    .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+    .btn-light {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.14) !important;
+      color: #f8fafc !important;
+      border-radius: 999px !important;
+    }
+    .btn-light:hover {
+      background-color: rgba(255, 255, 255, 0.16) !important;
+      color: #ffffff !important;
+    }
+    .schedule-banner .badge.bg-white,
+    .schedule-banner .btn-light {
+      background-color: #ffffff !important;
+      color: #064e3b !important;
+      border-radius: 999px !important;
+      font-weight: 700;
+    }
+
+    /* Custom Cyber Emerald Flatpickr Dark Theme */
+    .flatpickr-calendar {
+      background: #06221a !important;
+      border: 1px solid rgba(52, 211, 153, 0.35) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.70), 0 0 24px rgba(16, 185, 129, 0.15) !important;
+      border-radius: 20px !important;
+      overflow: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+    .flatpickr-months {
+      background: linear-gradient(135deg, #042f24 0%, #064e3b 100%) !important;
+      border-bottom: 1px solid rgba(52, 211, 153, 0.20) !important;
+      padding: 6px 0;
+    }
+    .flatpickr-current-month {
+      font-weight: 700 !important;
+      color: #f8fafc !important;
+      font-size: 14px !important;
+    }
+    .flatpickr-current-month .numInputWrapper span {
+      border-color: rgba(52, 211, 153, 0.25) !important;
+    }
+    .flatpickr-monthDropdown-months {
+      background: #06221a !important;
+      color: #34d399 !important;
+      font-weight: 700 !important;
+    }
+    span.flatpickr-weekday {
+      color: #6ee7b7 !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+    }
+    .flatpickr-day {
+      color: #e2e8f0 !important;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
+    }
+    .flatpickr-day:hover {
+      background: rgba(16, 185, 129, 0.25) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+    }
+    .flatpickr-day.today {
+      border-color: #34d399 !important;
+      color: #34d399 !important;
+    }
+    .flatpickr-day.selected {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+      color: #ffffff !important;
+      font-weight: 800 !important;
+      border-color: transparent !important;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45) !important;
+    }
+    .flatpickr-day.flatpickr-disabled, .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+      color: #475569 !important;
+    }
+    .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month {
+      color: #34d399 !important;
+      fill: #34d399 !important;
+    }
+    .flatpickr-months .flatpickr-prev-month:hover svg, .flatpickr-months .flatpickr-next-month:hover svg {
+      fill: #10b981 !important;
+    }
+    .input-group .flatpickr-input:not([type="hidden"]) {
+      background-color: #061a14 !important;
+      border-color: rgba(52, 211, 153, 0.25) !important;
+      color: #ffffff !important;
+      text-align: center;
+      font-weight: 700;
+      cursor: pointer;
+      border-left: none !important;
+      border-right: none !important;
+    }
+
+    .dropdown-menu-dark-glass {
+      background: #06221a !important;
+      border: 1px solid rgba(52, 211, 153, 0.35) !important;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.70) !important;
+      border-radius: 16px !important;
+      padding: 6px !important;
+      z-index: 1080 !important;
+    }
+    .dropdown-menu-dark-glass .dropdown-item {
+      color: #e2e8f0 !important;
+      font-size: 12px !important;
+      border-radius: 10px !important;
+      padding: 8px 14px !important;
+      font-weight: 600 !important;
+      transition: all 0.2s ease !important;
+    }
+    .dropdown-menu-dark-glass .dropdown-item:hover,
+    .dropdown-menu-dark-glass .dropdown-item.active {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(16, 185, 129, 0.35)) !important;
+      color: #ffffff !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- SIDEBAR NAVIGASI -->
+    <div class="col-md-2 sidebar p-3">
+      <div>
+        <div class="brand-badge d-flex align-items-center mb-4">
+          <img src="logo.png" alt="Logo Fadiya Kencana" style="width: 42px; height: 42px; border-radius: 12px; margin-right: 12px; background: #fff; padding: 3px; object-fit: contain;" onerror="this.style.display='none'">
+          <div>
+            <h6 class="fw-bold text-white mb-0" style="font-size: 13px; letter-spacing: 0.4px;">FADIYA KENCANA</h6>
+            <small style="font-size: 11px; color: #94a3b8;">Portal Admin Presensi</small>
+          </div>
+        </div>
+
+        <div class="text-uppercase fw-bold text-secondary mb-2 px-2" style="font-size: 10px; letter-spacing: 0.8px;">Menu Utama</div>
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="javascript:void(0)" id="navKaryawan" onclick="switchTab('karyawan')">
+              <span><i class="fa-solid fa-users me-2"></i> Data Karyawan</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0)" id="navLogHarian" onclick="switchTab('log_harian')">
+              <span><i class="fa-solid fa-location-crosshairs me-2"></i> Log & Lokasi Harian</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0)" id="navRekapBulanan" onclick="switchTab('rekap_bulanan')">
+              <span><i class="fa-solid fa-chart-pie me-2"></i> Rekap Bulanan</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0)" id="navPengajuanIzin" onclick="switchTab('pengajuan_izin')">
+              <span><i class="fa-solid fa-envelope-open-text me-2"></i> Permohonan Izin</span>
+              <span class="badge rounded-pill bg-danger d-none" id="badgePendingIzin" style="font-size: 10px;">0</span>
+            </a>
+          </li>
+          <li class="nav-item mt-2">
+            <a class="nav-link text-white fw-bold py-2 px-3 rounded-3 shadow-sm" href="javascript:void(0)" onclick="bukaModalPayroll()" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.35) 100%); border: 1px solid rgba(52, 211, 153, 0.45);" title="Buka Rekapitulasi Presensi & Evaluasi Kedisiplinan Karyawan">
+              <span><i class="fa-solid fa-clipboard-check me-2 text-warning"></i> Rekap Presensi &amp; Disiplin</span>
+              <span class="badge bg-success rounded-pill ms-auto" style="font-size: 9px;">EXCEL / PDF</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="text-uppercase fw-bold text-secondary mt-4 mb-2 px-2" style="font-size: 10px; letter-spacing: 0.8px;">Pengaturan Sistem</div>
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalPengaturanJam">
+              <span><i class="fa-solid fa-location-dot me-2"></i> Jam Kerja &amp; Lokasi Kantor</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="text-uppercase fw-bold text-secondary mt-4 mb-2 px-2" style="font-size: 10px; letter-spacing: 0.8px;">Kecerdasan Buatan</div>
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalAsistenAi" id="navAsistenAi">
+              <span><i class="fa-solid fa-wand-magic-sparkles me-2"></i> Asisten AI HRD</span>
+              <span class="badge rounded-pill" style="font-size: 9px; background: rgba(245, 158, 11, 0.2); color: #fbbf24;">BARU</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Tombol Logout -->
+      <div class="pt-3 border-top border-secondary border-opacity-25">
+        <button class="btn btn-outline-light w-100 fw-semibold border-0 text-start py-2 px-3 rounded-3" onclick="logoutAdmin()" style="background: rgba(255,255,255,0.06); font-size: 13px;">
+          <i class="fa-solid fa-right-from-bracket me-2 text-danger"></i> Keluar Sesi Admin
+        </button>
+      </div>
+    </div>
+
+    <!-- KONTEN UTAMA -->
+    <div class="col-md-10 p-4">
+      <!-- HEADER HALAMAN -->
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+          <h4 class="fw-extrabold text-dark mb-1" id="pageTitle" style="letter-spacing: -0.4px;">Data Master Karyawan</h4>
+          <p class="text-muted small mb-0" id="pageSubtitle">Kelola identitas karyawan, perangkat terdaftar, dan penambahan personel baru.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-light border fw-semibold px-3 py-2 btn-sm rounded-pill" onclick="initData()" title="Muat Ulang Data">
+            <i class="fa-solid fa-rotate me-1 text-secondary"></i> Segarkan
+          </button>
+          <button class="btn btn-warning text-dark fw-bold px-3 py-2 btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalInputIzin">
+            <i class="fa-solid fa-file-medical me-1"></i> Input Izin / Sakit
+          </button>
+          <button class="btn btn-teal px-3 py-2 btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#modalTambahKaryawan" id="btnTambah">
+            <i class="fa-solid fa-user-plus me-1"></i> Tambah Karyawan
+          </button>
+        </div>
+      </div>
+
+      <!-- BANNER JAM KERJA & MODE LOKASI REALTIME (DENGAN ORNAMEN TOPOGRAFI & RESIN KACA) -->
+      <div class="schedule-banner mb-4">
+        <svg class="topography-svg" viewBox="0 0 480 180" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Translucent 3D wave shading -->
+          <path d="M0 130 C120 90, 260 150, 480 80 L480 180 L0 180 Z" fill="url(#topoGrad)" opacity="0.35"/>
+          <!-- Glowing topographic contours -->
+          <path d="M0 65 C140 20, 280 85, 480 30" stroke="#6ee7b7" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+          <path d="M30 95 C170 50, 310 115, 480 58" stroke="#a7f3d0" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+          <path d="M70 130 C210 85, 330 145, 480 92" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" opacity="0.40"/>
+          <!-- Topographic resonance rings on the right -->
+          <circle cx="390" cy="85" r="70" stroke="#6ee7b7" stroke-width="1.8" opacity="0.35"/>
+          <circle cx="390" cy="85" r="46" stroke="#34d399" stroke-width="1.8" opacity="0.45"/>
+          <circle cx="390" cy="85" r="24" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.15)" opacity="0.65"/>
+          <circle cx="390" cy="85" r="4" fill="#ffffff" opacity="0.95"/>
+          <!-- Sparkles -->
+          <circle cx="340" cy="40" r="2.5" fill="#ffffff" opacity="0.9"/>
+          <circle cx="340" cy="40" r="6" fill="#34d399" opacity="0.35"/>
+          <circle cx="430" cy="50" r="2" fill="#ffffff" opacity="0.9"/>
+          <circle cx="280" cy="70" r="2" fill="#ffffff" opacity="0.8"/>
+          <defs>
+            <linearGradient id="topoGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#042f24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="schedule-banner-content d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.25);">
+              <i class="fa-solid fa-satellite-dish fs-5 text-white"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="badge bg-white text-dark fw-bold" style="font-size: 11px;">
+                  <i class="fa-solid fa-clock text-success me-1"></i> Jam Kerja: <span id="infoJamKerja">08:00 - 17:00</span> WIB
+                </span>
+                <span class="badge bg-warning text-dark fw-bold" style="font-size: 11px;">
+                  Batas Terlambat: <span id="infoBatasTerlambat">08:00</span> WIB
+                </span>
+                <span class="badge bg-white text-dark fw-bold" style="font-size: 11px;">
+                  <i class="fa-solid fa-location-dot text-danger me-1"></i> <span id="infoLokasiKantor">Kantor Pusat</span> (<span id="infoRadiusKantor">100m</span>)
+                </span>
+                <span class="badge bg-info text-dark fw-bold" style="font-size: 11px;" id="badgeStatusRadius">
+                  <i class="fa-solid fa-shield-halved me-1"></i> Geofence Aktif
+                </span>
+              </div>
+              <div class="small text-white text-opacity-90 mt-1" id="infoPengumuman">
+                Pengumuman: Jam kerja resmi kantor dimulai pukul 08:00 WIB.
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-light fw-bold px-3 py-1.5 rounded-3 text-dark shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPengaturanJam">
+            <i class="fa-solid fa-sliders me-1 text-teal"></i> Pengaturan Jam &amp; Lokasi Kantor
+          </button>
+        </div>
+      </div>
+
+      <!-- KARTU RINGKASAN STATISTIK -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Total Karyawan</div>
+              <div class="h3 fw-bold text-dark mb-0" id="statTotalKaryawan">0</div>
+              <small class="text-muted" style="font-size: 11px;"><span id="statDeviceBound">0</span> HP Tertaut</small>
+            </div>
+            <div class="stat-icon blue">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Hadir Bulan Ini</div>
+              <div class="h3 fw-bold text-success mb-0" id="statHadirBulanIni">0</div>
+              <small class="text-success fw-semibold" style="font-size: 11px;">Hari ini: <span id="statHadirHariIni">0</span> hadir</small>
+            </div>
+            <div class="stat-icon green">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Izin / Sakit Bulan Ini</div>
+              <div class="h3 fw-bold text-warning mb-0" id="statIzinBulanIni">0</div>
+              <small class="text-warning fw-semibold" style="font-size: 11px;"><span id="statPendingIzinText">0</span> menunggu persetujuan</small>
+            </div>
+            <div class="stat-icon amber">
+              <i class="fa-solid fa-notes-medical"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Terlambat Bulan Ini</div>
+              <div class="h3 fw-bold text-danger mb-0" id="statTerlambatBulanIni">0</div>
+              <small class="text-danger fw-semibold" style="font-size: 11px;">Hari ini: <span id="statTerlambatHariIni">0</span> terlambat</small>
+            </div>
+            <div class="stat-icon red">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL FILTER & EKSPOR -->
+      <div class="card-modern filter-panel p-3 mb-4" style="overflow: visible !important; position: relative; z-index: 50;">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-secondary mb-1">Filter Departemen</label>
+            <select class="form-select form-select-sm" id="filterDept" onchange="applyFilters()">
+              <option value="SEMUA">Semua Departemen</option>
+              <option value="Produksi Pabrik">Produksi Pabrik</option>
+              <option value="IT & Sistem Informasi">IT & Sistem Informasi</option>
+              <option value="Human Resources (HR)">Human Resources (HR)</option>
+              <option value="Keuangan & Akuntansi">Keuangan & Akuntansi</option>
+              <option value="Operasional & Logistik">Operasional & Logistik</option>
+              <option value="Quality Control (QC)">Quality Control (QC)</option>
+              <option value="Maintenance & Teknik">Maintenance & Teknik</option>
+              <option value="Gudang & Material">Gudang & Material</option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <div class="d-flex justify-content-between align-items-center mb-1 flex-nowrap gap-2" style="position: relative; z-index: 60;">
+              <label class="form-label small fw-bold text-secondary mb-0 text-nowrap" style="flex-shrink: 0;">
+                <i class="fa-regular fa-calendar-days me-1 text-success"></i> Periode / Tanggal
+              </label>
+              <!-- Hidden select for mode compatibility -->
+              <input type="hidden" id="modeLogHarian" value="BULAN">
+              <!-- Compact Mode Pill Dropdown (Rapi, Pas di Kotak, Tidak Meluber) -->
+              <div class="dropdown" id="wrapSemuaTanggal" style="flex-shrink: 0;">
+                <button class="btn btn-sm py-0 px-2.5 fw-bold rounded-pill dropdown-toggle d-inline-flex align-items-center gap-1 shadow-sm" type="button" id="btnModeDropdown" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" style="font-size: 11px; height: 22px; background: rgba(5, 150, 105, 0.22); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35);">
+                  <span id="modeDisplayLabel"><i class="fa-solid fa-calendar-days me-1"></i> 1 Bulan Penuh</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark-glass shadow border-0 py-1" style="min-width: 195px; z-index: 1090 !important;">
+                  <li><a class="dropdown-item py-1.5 px-3" href="javascript:void(0)" onclick="setModeLog('TANGGAL')"><i class="fa-regular fa-calendar me-2 text-success"></i>Per Tanggal (Harian)</a></li>
+                  <li><a class="dropdown-item py-1.5 px-3 active fw-bold" href="javascript:void(0)" id="menuItemBulan" onclick="setModeLog('BULAN')"><i class="fa-solid fa-calendar-days me-2 text-primary"></i>1 Bulan Penuh</a></li>
+                  <li><a class="dropdown-item py-1.5 px-3" href="javascript:void(0)" onclick="setModeLog('BELUM_ABSEN')"><i class="fa-regular fa-clock me-2 text-warning"></i>Belum Absen Hari Ini</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Kalender Interaktif & Tombol Geser Tanggal (Bisa Digeser ◀ / ▶ atau Diklik) -->
+            <div class="input-group input-group-sm flex-nowrap">
+              <button class="btn btn-outline-secondary px-2.5 text-white flex-shrink-0" type="button" onclick="geserTanggal(-1)" title="Geser ke Hari/Bulan Sebelumnya (◀)" style="border-radius: 12px 0 0 12px; background: rgba(255,255,255,0.06); border-color: rgba(52, 211, 153, 0.25);">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <input type="text" class="form-control form-control-sm text-center fw-bold text-white text-truncate" id="filterBulanInput" placeholder="Pilih Tanggal / Bulan..." readonly style="background-color: #061a14; border-color: rgba(52, 211, 153, 0.25); cursor: pointer;" title="Klik untuk membuka kalender interaktif yang bisa digeser">
+              <button class="btn btn-outline-secondary px-2.5 text-white flex-shrink-0" type="button" onclick="geserTanggal(1)" title="Geser ke Hari/Bulan Berikutnya (▶)" style="background: rgba(255,255,255,0.06); border-color: rgba(52, 211, 153, 0.25);">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+              <button class="btn btn-teal px-2.5 fw-bold flex-shrink-0" type="button" onclick="resetKeHariIni()" title="Kembali ke Hari Ini" style="border-radius: 0 12px 12px 0; font-size: 11px;">
+                Hari Ini ↺
+              </button>
+            </div>
+            <!-- Input tersembunyi untuk kompatibilitas data kode lain -->
+            <input type="hidden" id="filterBulan" onchange="onDateFilterChange()">
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-secondary mb-1">Pencarian Cepat</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: rgba(52, 211, 153, 0.22);"><i class="fa-solid fa-magnifying-glass"></i></span>
+              <input type="text" class="form-control border-start-0" id="searchKeyword" placeholder="Cari NIP / Nama..." onkeyup="applyFilters()">
+            </div>
+          </div>
+
+          <div class="col-md-3 d-flex gap-1.5 align-items-end">
+            <button class="btn btn-teal fw-bold btn-sm py-1.5 px-3 rounded-pill w-100 shadow-sm" onclick="bukaModalPayroll()" style="background-color: #00695c; border-color: #00695c; color: white;" title="Buka Rekapitulasi Presensi & Evaluasi Kedisiplinan Karyawan">
+              <i class="fa-solid fa-clipboard-check me-1 text-warning"></i> Rekap Presensi &amp; Disiplin
+            </button>
+            <div class="btn-group">
+              <button type="button" class="btn btn-outline-secondary btn-sm py-1.5 px-2.5 rounded-pill dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Pilihan Ekspor Lainnya">
+                <i class="fa-solid fa-download"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark-glass shadow border-0" style="border-radius: 12px; font-size: 12px; z-index: 1090 !important;">
+                <li><h6 class="dropdown-header text-uppercase text-secondary" style="font-size: 10px;">Laporan Tabel Ini</h6></li>
+                <li><a class="dropdown-item py-1.5" href="javascript:void(0)" onclick="downloadExcelTabelAktif()"><i class="fa-solid fa-file-excel text-success me-2"></i>Download Excel (.xls)</a></li>
+                <li><a class="dropdown-item py-1.5" href="javascript:void(0)" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf text-danger me-2"></i>Cetak Laporan PDF</a></li>
+                <li><a class="dropdown-item py-1.5" href="javascript:void(0)" onclick="downloadCSV()"><i class="fa-solid fa-file-csv text-primary me-2"></i>Download File CSV</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABEL DATA UTAMA -->
+      <div class="card-modern overflow-hidden">
+        <div class="table-responsive">
+          <table class="table table-custom table-hover align-middle" id="dataTable">
+            <thead>
+              <tr id="tableHeader">
+                <!-- Diisi dinamis sesuai Tab -->
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Diisi dinamis dari Server Node.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 1: TAMBAH KARYAWAN BARU -->
+<div class="modal fade" id="modalTambahKaryawan" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+      <div class="modal-header border-bottom px-4 pt-3 pb-3" style="position: relative; overflow: hidden; background: linear-gradient(145deg, #042f24 0%, #064e3b 30%, #047857 65%, #059669 88%, #10b981 100%);">
+        <!-- Topographic Contour SVG Ornament -->
+        <svg class="topography-svg" viewBox="0 0 450 120" preserveAspectRatio="none" style="position: absolute; right: 0; top: 0; bottom: 0; width: 380px; height: 100%; pointer-events: none; opacity: 0.75; z-index: 1;">
+          <path d="M 0 120 Q 110 30 230 75 T 450 45 L 450 120 Z" fill="url(#modalTambahTopoGrad)"/>
+          <path d="M 0 120 Q 130 50 260 85 T 450 65" stroke="rgba(167, 243, 208, 0.45)" stroke-width="1.8" fill="none"/>
+          <circle cx="360" cy="60" r="60" stroke="#34d399" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35" fill="none"/>
+          <circle cx="360" cy="60" r="40" stroke="#6ee7b7" stroke-width="1.8" opacity="0.45" fill="none"/>
+          <circle cx="360" cy="60" r="20" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.2)" opacity="0.65"/>
+          <circle cx="360" cy="60" r="3.5" fill="#ffffff" opacity="0.95"/>
+          <defs>
+            <linearGradient id="modalTambahTopoGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#042f24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="d-flex align-items-center" style="position: relative; z-index: 2;">
+          <div class="me-3 p-2.5 rounded-3 text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="fa-solid fa-user-plus fs-5 text-white"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-white mb-0" style="letter-spacing: -0.3px;">Tambah Karyawan Baru</h5>
+            <p class="text-white-50 small mb-0" style="font-size: 11.5px;">Daftarkan data personel ke database utama PT Fadiya Kencana.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" style="position: relative; z-index: 2;" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="formTambah" onsubmit="tambahKaryawan(event)">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">NIP / NIK Karyawan</label>
+              <input type="text" class="form-control" id="addNip" placeholder="Contoh: 20260105" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Jenis Kelamin</label>
+              <select class="form-select" id="addJk">
+                <option value="L">Laki-laki (L)</option>
+                <option value="P">Perempuan (P)</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Nama Lengkap</label>
+              <input type="text" class="form-control" id="addNama" placeholder="Masukkan nama lengkap karyawan" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Departemen / Divisi</label>
+              <select class="form-select" id="addDept" required>
+                <option value="Produksi Pabrik">Produksi Pabrik</option>
+                <option value="IT & Sistem Informasi">IT & Sistem Informasi</option>
+                <option value="Human Resources (HR)">Human Resources (HR)</option>
+                <option value="Keuangan & Akuntansi">Keuangan & Akuntansi</option>
+                <option value="Operasional & Logistik">Operasional & Logistik</option>
+                <option value="Quality Control (QC)">Quality Control (QC)</option>
+                <option value="Maintenance & Teknik">Maintenance & Teknik</option>
+                <option value="Gudang & Material">Gudang & Material</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Tempat, Tanggal Lahir</label>
+              <input type="text" class="form-control" id="addTtl" placeholder="Contoh: Surabaya, 15/01/1998">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Alamat Domisili</label>
+              <input type="text" class="form-control" id="addAlamat" placeholder="Contoh: Jl. Raya Industri No. 12">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-teal w-100 py-2.5 mt-4">
+            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data Karyawan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 2: INPUT IZIN / SAKIT OLEH ADMIN -->
+<div class="modal fade" id="modalInputIzin" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+      <div class="modal-header border-bottom px-4 pt-3 pb-3" style="position: relative; overflow: hidden; background: linear-gradient(145deg, #042f24 0%, #064e3b 30%, #047857 65%, #059669 88%, #10b981 100%);">
+        <!-- Topographic Contour SVG Ornament -->
+        <svg class="topography-svg" viewBox="0 0 450 120" preserveAspectRatio="none" style="position: absolute; right: 0; top: 0; bottom: 0; width: 380px; height: 100%; pointer-events: none; opacity: 0.75; z-index: 1;">
+          <path d="M 0 120 Q 110 30 230 75 T 450 45 L 450 120 Z" fill="url(#modalIzinTopoGrad)"/>
+          <path d="M 0 120 Q 130 50 260 85 T 450 65" stroke="rgba(167, 243, 208, 0.45)" stroke-width="1.8" fill="none"/>
+          <circle cx="360" cy="60" r="60" stroke="#34d399" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35" fill="none"/>
+          <circle cx="360" cy="60" r="40" stroke="#6ee7b7" stroke-width="1.8" opacity="0.45" fill="none"/>
+          <circle cx="360" cy="60" r="20" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.2)" opacity="0.65"/>
+          <circle cx="360" cy="60" r="3.5" fill="#ffffff" opacity="0.95"/>
+          <defs>
+            <linearGradient id="modalIzinTopoGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#042f24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="d-flex align-items-center" style="position: relative; z-index: 2;">
+          <div class="me-3 p-2.5 rounded-3 text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="fa-solid fa-file-medical fs-5 text-warning"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-white mb-0" style="letter-spacing: -0.3px;">Catat Izin / Sakit Karyawan</h5>
+            <p class="text-white-50 small mb-0" style="font-size: 11.5px;">Input langsung oleh Admin (otomatis berstatus Disetujui).</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" style="position: relative; z-index: 2;" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="formIzinAdmin" onsubmit="submitIzinAdmin(event)">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Pilih Karyawan</label>
+            <select class="form-select" id="izinKaryawanSelect" required>
+              <option value="">-- Pilih Karyawan --</option>
+            </select>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Jenis Ketidakhadiran</label>
+              <select class="form-select" id="izinJenisSelect" required>
+                <option value="Sakit">Sakit</option>
+                <option value="Izin">Izin</option>
+                <option value="Cuti">Cuti</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Tanggal</label>
+              <input type="date" class="form-control" id="izinTanggalInput" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Keterangan / Alasan</label>
+            <textarea class="form-control" id="izinAlasanInput" rows="2" placeholder="Contoh: Istirahat medis (Surat Dokter)" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-warning w-100 fw-bold py-2.5 mt-2">
+            <i class="fa-solid fa-check-circle me-1"></i> Simpan Status Ketidakhadiran
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 3: PENGATURAN JAM KERJA & LOKASI KANTOR (GEOFENCING) -->
+<div class="modal fade" id="modalPengaturanJam" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+      <div class="modal-header border-bottom px-4 pt-3 pb-3" style="position: relative; overflow: hidden; background: linear-gradient(145deg, #042f24 0%, #064e3b 30%, #047857 65%, #059669 88%, #10b981 100%);">
+        <!-- Topographic Contour SVG Ornament -->
+        <svg class="topography-svg" viewBox="0 0 500 130" preserveAspectRatio="none" style="position: absolute; right: 0; top: 0; bottom: 0; width: 420px; height: 100%; pointer-events: none; opacity: 0.75; z-index: 1;">
+          <path d="M 0 130 Q 120 30 250 75 T 500 45 L 500 130 Z" fill="url(#modalJamTopoGrad)"/>
+          <path d="M 0 130 Q 140 50 280 90 T 500 65" stroke="rgba(167, 243, 208, 0.45)" stroke-width="1.8" fill="none"/>
+          <path d="M 0 130 Q 170 70 320 105 T 500 85" stroke="rgba(110, 231, 183, 0.35)" stroke-width="1.4" fill="none"/>
+          <path d="M 0 130 Q 200 90 360 115 T 500 100" stroke="rgba(52, 211, 153, 0.25)" stroke-width="1.2" fill="none"/>
+          <circle cx="390" cy="65" r="70" stroke="#34d399" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35" fill="none"/>
+          <circle cx="390" cy="65" r="45" stroke="#6ee7b7" stroke-width="1.8" opacity="0.45" fill="none"/>
+          <circle cx="390" cy="65" r="22" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.2)" opacity="0.65"/>
+          <circle cx="390" cy="65" r="4" fill="#ffffff" opacity="0.95"/>
+          <defs>
+            <linearGradient id="modalJamTopoGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#042f24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="d-flex align-items-center" style="position: relative; z-index: 2;">
+          <div class="me-3 p-2.5 rounded-3 text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="fa-solid fa-sliders fs-5 text-white"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-white mb-0" style="letter-spacing: -0.3px;">Pengaturan Jam Kerja &amp; Titik Lokasi Kantor</h5>
+            <p class="text-white-50 small mb-0" style="font-size: 11.5px;">Tersinkronisasi langsung ke sistem backend dan seluruh aplikasi Android karyawan.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" style="position: relative; z-index: 2;" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="formConfigKantor" onsubmit="simpanConfigKantor(event)">
+
+          <!-- SEKSI 1: JAM KERJA -->
+          <div class="mb-4">
+            <div class="d-flex align-items-center mb-2">
+              <span class="badge bg-teal me-2" style="background-color: #00695c;"><i class="fa-solid fa-clock"></i> 1</span>
+              <h6 class="fw-bold mb-0 text-dark">Pengaturan Jam Kerja</h6>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold small text-secondary">Jam Masuk</label>
+                <input type="time" class="form-control fw-bold" id="cfgJamMasuk" value="08:00" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold small text-secondary">Batas Terlambat</label>
+                <input type="time" class="form-control fw-bold text-danger" id="cfgBatasTerlambat" value="08:00" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold small text-secondary">Jam Pulang</label>
+                <input type="time" class="form-control fw-bold" id="cfgJamPulang" value="17:00" required>
+              </div>
+            </div>
+            <div>
+              <label class="form-label fw-semibold small text-secondary">Pesan Pengumuman di Aplikasi Karyawan</label>
+              <textarea class="form-control" id="cfgPengumuman" rows="2" placeholder="Masukkan pengumuman jam kerja atau informasi penting..." required></textarea>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- SEKSI 2: TITIK LOKASI KANTOR PUSAT & GEOFENCING -->
+          <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center">
+                <span class="badge bg-teal me-2" style="background-color: #00695c;"><i class="fa-solid fa-map-pin"></i> 2</span>
+                <h6 class="fw-bold mb-0 text-dark">Titik Lokasi Kantor Pusat &amp; Geofencing Presensi</h6>
+              </div>
+              <span class="badge bg-light text-dark border">Dual Input: PC GPS &amp; Manual HP</span>
+            </div>
+
+            <div class="card border p-3 mb-3" style="background-color: #f8fafc; border-radius: 12px;">
+              <!-- Input Nama Lokasi -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small text-secondary">Nama Kantor / Lokasi Pusat</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fa-solid fa-building text-secondary"></i></span>
+                  <input type="text" class="form-control" id="cfgLokasiNama" value="Kantor Pusat PT Fadiya Kencana" placeholder="Contoh: Kantor Pusat Solo" required>
+                </div>
+              </div>
+
+              <!-- PILIHAN 1: TEMPEL CEPAT DARI HP / MAPS -->
+              <div class="p-3 mb-3 rounded-3" style="background: #f0fdf4; border: 1px dashed #22c55e;">
+                <label class="form-label fw-bold text-success mb-1 small d-flex justify-content-between align-items-center">
+                  <span><i class="fa-solid fa-paste me-1"></i> Pilihan A: Tempel Cepat Koordinat dari HP / Google Maps</span>
+                  <span class="badge bg-success bg-opacity-25 text-success" style="font-size: 10px;">Mudah &amp; Akurat</span>
+                </label>
+                <div class="input-group input-group-sm mb-1">
+                  <input type="text" class="form-control font-monospace" id="cfgQuickPaste" placeholder="Tempel di sini: contoh -7.58854, 110.79566 atau link google maps" oninput="autoParseCoordinates(this.value)">
+                  <button class="btn btn-outline-success fw-bold" type="button" onclick="tempelDariClipboard()">
+                    <i class="fa-solid fa-clipboard me-1"></i> Paste
+                  </button>
+                </div>
+                <div id="quickPasteFeedback" class="small text-success mt-1 fw-bold" style="display: none;"></div>
+                <div class="text-muted mt-1" style="font-size: 11px;">
+                  <i class="fa-solid fa-lightbulb text-warning me-1"></i> <strong>Cara dari HP:</strong> Buka Google Maps di kantor &rarr; Tahan pin lokasi &rarr; Salin koordinat angka atau bagikan tautan, lalu tempel di kotak atas. Sistem otomatis mengisi Latitude &amp; Longitude!
+                </div>
+              </div>
+
+              <!-- PILIHAN 2: TOMBOL AKSI CEPAT (GPS BROWSER / ABSEN TERAKHIR) -->
+              <div class="mb-3">
+                <label class="form-label fw-bold text-secondary mb-1 small">
+                  <i class="fa-solid fa-bolt me-1 text-primary"></i> Pilihan B: Ambil Koordinat Otomatis
+                </label>
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary fw-semibold" id="btnDeteksiGpsPc" onclick="deteksiGpsBrowser()">
+                    <i class="fa-solid fa-crosshairs me-1"></i> Deteksi GPS Browser / PC Saat Ini
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" onclick="gunakanTitikAbsenTerakhir()">
+                    <i class="fa-solid fa-user-check me-1 text-teal" style="color: #00695c;"></i> Gunakan Titik Absen Karyawan Terakhir
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-success fw-semibold ms-auto" onclick="bukaMapsKantor()">
+                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Buka Titik di Google Maps
+                  </button>
+                </div>
+              </div>
+
+              <!-- KOORDINAT LATITUDE & LONGITUDE -->
+              <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold small text-secondary">Latitude (Garis Lintang)</label>
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white"><i class="fa-solid fa-compass text-secondary"></i></span>
+                    <input type="number" step="any" class="form-control fw-bold font-monospace" id="cfgLokasiLat" value="-7.58854000" placeholder="-7.58854000" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold small text-secondary">Longitude (Garis Bujur)</label>
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white"><i class="fa-solid fa-compass text-secondary"></i></span>
+                    <input type="number" step="any" class="form-control fw-bold font-monospace" id="cfgLokasiLng" value="110.79566000" placeholder="110.79566000" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RADIUS PRESENSI & PRESET -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small text-secondary d-flex justify-content-between">
+                  <span>Radius Presensi Maksimal (Meter)</span>
+                  <span class="text-teal fw-bold" id="labelRadiusTerpilih">100 Meter</span>
+                </label>
+                <div class="input-group input-group-sm mb-2">
+                  <input type="number" class="form-control fw-bold" id="cfgRadiusMeter" value="100" min="10" max="50000" oninput="updateLabelRadius(this.value)" required>
+                  <span class="input-group-text">Meter</span>
+                </div>
+                <div class="d-flex flex-wrap gap-1 align-items-center">
+                  <small class="text-muted me-2" style="font-size: 11px;">Pilihan Cepat:</small>
+                  <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" onclick="setRadiusPreset(50)">50m</button>
+                  <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" onclick="setRadiusPreset(100)">100m (Ideal)</button>
+                  <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" onclick="setRadiusPreset(200)">200m</button>
+                  <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" onclick="setRadiusPreset(500)">500m</button>
+                  <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 rounded-pill" onclick="setRadiusPreset(1000)">1 km</button>
+                </div>
+              </div>
+
+              <!-- ATURAN GEOFENCE: TOLERANSI VS KETAT -->
+              <div class="p-2.5 rounded-3 border bg-white">
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" role="switch" id="cfgWajibRadius">
+                  <label class="form-check-label fw-bold small text-dark" for="cfgWajibRadius">
+                    Wajibkan Karyawan Presensi di Dalam Radius Kantor
+                  </label>
+                </div>
+                <small class="text-muted d-block mt-1 ps-4" style="font-size: 11px;">
+                  &bull; <strong>Aktif:</strong> Sistem menolak presensi jika karyawan di luar radius.<br>
+                  &bull; <strong>Non-Aktif (Toleransi):</strong> Karyawan tetap bisa presensi di mana saja, dan sistem mencatat jarak fisik ke kantor untuk audit admin.
+                </small>
+              </div>
+
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-teal w-100 py-2.5 fw-bold shadow-sm" style="background-color: #00695c; border-color: #00695c;">
+            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Seluruh Pengaturan Jam &amp; Lokasi Kantor
+          </button>
+        </form>
+
+        <hr class="my-4 border-secondary border-opacity-25">
+        <div class="p-3 rounded-4 border" style="background: rgba(6, 78, 59, 0.45); border-color: rgba(52, 211, 153, 0.3) !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="d-inline-flex align-items-center justify-content-center rounded-3" style="width: 32px; height: 32px; background: rgba(52, 211, 153, 0.18); color: #34d399;">
+                <i class="fa-solid fa-key" style="font-size: 14px;"></i>
+              </span>
+              <div>
+                <div class="fw-bold text-white small" style="letter-spacing: -0.2px;">Keamanan Portal: Ubah Kata Sandi Admin</div>
+                <small class="text-white-50" style="font-size: 11px;">Kata sandi ini otomatis tersinkronisasi untuk Web Admin &amp; Aplikasi Android.</small>
+              </div>
+            </div>
+            <span class="badge rounded-pill" style="background: rgba(52, 211, 153, 0.15); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.3); font-size: 10px;">
+              <i class="fa-solid fa-shield-halved me-1"></i> Terenkripsi
+            </span>
+          </div>
+
+          <form id="formUbahPasswordAdmin" onsubmit="ubahPasswordAdmin(event)">
+            <div class="row g-2.5 align-items-end">
+              <div class="col-md-5">
+                <label class="form-label text-white-50 mb-1 fw-semibold" style="font-size: 11.5px;">Kata Sandi Saat Ini</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text border-0" style="background: rgba(4, 47, 36, 0.9); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.35) !important; border-right: none !important;">
+                    <i class="fa-solid fa-lock"></i>
+                  </span>
+                  <input type="password" class="form-control form-control-sm text-white" id="oldAdminPass" placeholder="Masukkan sandi saat ini" required style="background: rgba(4, 47, 36, 0.9); border: 1px solid rgba(52, 211, 153, 0.35); border-left: none; font-size: 12px;" autocomplete="current-password">
+                  <button class="btn btn-sm" type="button" onclick="togglePasswordVisibility('oldAdminPass', this)" style="background: rgba(4, 47, 36, 0.9); border: 1px solid rgba(52, 211, 153, 0.35); border-left: none; color: #a7f3d0;" title="Tampilkan sandi">
+                    <i class="fa-solid fa-eye" style="font-size: 11px;"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-5">
+                <label class="form-label text-white-50 mb-1 fw-semibold" style="font-size: 11.5px;">Kata Sandi Baru</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text border-0" style="background: rgba(4, 47, 36, 0.9); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.35) !important; border-right: none !important;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                  </span>
+                  <input type="password" class="form-control form-control-sm text-white" id="newAdminPass" placeholder="Minimal 5 karakter" minlength="5" required style="background: rgba(4, 47, 36, 0.9); border: 1px solid rgba(52, 211, 153, 0.35); border-left: none; font-size: 12px;" autocomplete="new-password">
+                  <button class="btn btn-sm" type="button" onclick="togglePasswordVisibility('newAdminPass', this)" style="background: rgba(4, 47, 36, 0.9); border: 1px solid rgba(52, 211, 153, 0.35); border-left: none; color: #a7f3d0;" title="Tampilkan sandi">
+                    <i class="fa-solid fa-eye" style="font-size: 11px;"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <button type="submit" id="btnSimpanPasswordAdmin" class="btn btn-sm w-100 fw-bold d-flex align-items-center justify-content-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border: 1px solid rgba(110, 231, 183, 0.5); height: 32px; border-radius: 999px;">
+                  <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 4: POP-UP LIHAT BUKTI SWAFOTO & LOKASI GPS REALTIME -->
+<div class="modal fade" id="modalFotoSelfie" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 18px; overflow: hidden;">
+      <div class="modal-header bg-dark text-white border-bottom-0 py-3 px-4">
+        <div>
+          <h6 class="modal-title fw-bold mb-0" id="modalFotoTitle">Bukti Swafoto Presensi</h6>
+          <small class="text-white-50" id="modalFotoSubtitle" style="font-size: 11.5px;"></small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light text-center">
+        <img id="modalFotoImg" src="" alt="Foto Swafoto Presensi" class="img-fluid rounded-3 shadow-sm border bg-white" style="max-height: 430px; object-fit: contain;">
+        <div id="modalFotoMapsWrap" class="mt-3 d-none">
+          <a id="modalFotoMapsLink" href="#" target="_blank" class="btn btn-teal btn-sm px-3 py-2 fw-semibold">
+            <i class="fa-solid fa-map-location-dot me-1"></i> Buka Titik Lokasi GPS di Google Maps
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 5: EDIT DATA KARYAWAN -->
+<div class="modal fade" id="modalEditKaryawan" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+      <div class="modal-header border-bottom px-4 pt-3 pb-3" style="position: relative; overflow: hidden; background: linear-gradient(145deg, #042f24 0%, #064e3b 30%, #047857 65%, #059669 88%, #10b981 100%);">
+        <!-- Topographic Contour SVG Ornament -->
+        <svg class="topography-svg" viewBox="0 0 450 120" preserveAspectRatio="none" style="position: absolute; right: 0; top: 0; bottom: 0; width: 380px; height: 100%; pointer-events: none; opacity: 0.75; z-index: 1;">
+          <path d="M 0 120 Q 110 30 230 75 T 450 45 L 450 120 Z" fill="url(#modalEditKaryawanTopoGrad)"/>
+          <path d="M 0 120 Q 130 50 260 85 T 450 65" stroke="rgba(167, 243, 208, 0.45)" stroke-width="1.8" fill="none"/>
+          <circle cx="360" cy="60" r="60" stroke="#34d399" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35" fill="none"/>
+          <circle cx="360" cy="60" r="40" stroke="#6ee7b7" stroke-width="1.8" opacity="0.45" fill="none"/>
+          <circle cx="360" cy="60" r="20" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.2)" opacity="0.65"/>
+          <circle cx="360" cy="60" r="3.5" fill="#ffffff" opacity="0.95"/>
+          <defs>
+            <linearGradient id="modalEditKaryawanTopoGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#042f24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="d-flex align-items-center" style="position: relative; z-index: 2;">
+          <div class="me-3 p-2.5 rounded-3 text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="fa-solid fa-user-pen fs-5 text-white"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-white mb-0" style="letter-spacing: -0.3px;">Edit Data Karyawan</h5>
+            <p class="text-white-50 small mb-0" style="font-size: 11.5px;">Perbarui informasi identitas dan divisi staf PT Fadiya Kencana.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" style="position: relative; z-index: 2;" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="formEditKaryawan" onsubmit="simpanEditKaryawan(event)">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">NIP / NIK (Tetap)</label>
+              <input type="text" class="form-control bg-light fw-bold" id="editNip" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Jenis Kelamin</label>
+              <select class="form-select" id="editJk">
+                <option value="L">Laki-laki (L)</option>
+                <option value="P">Perempuan (P)</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Nama Lengkap</label>
+              <input type="text" class="form-control" id="editNama" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Departemen / Divisi</label>
+              <select class="form-select" id="editDept" required>
+                <option value="Produksi Pabrik">Produksi Pabrik</option>
+                <option value="IT & Sistem Informasi">IT & Sistem Informasi</option>
+                <option value="Human Resources (HR)">Human Resources (HR)</option>
+                <option value="Keuangan & Akuntansi">Keuangan & Akuntansi</option>
+                <option value="Operasional & Logistik">Operasional & Logistik</option>
+                <option value="Quality Control (QC)">Quality Control (QC)</option>
+                <option value="Maintenance & Teknik">Maintenance & Teknik</option>
+                <option value="Gudang & Material">Gudang & Material</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Tempat, Tanggal Lahir</label>
+              <input type="text" class="form-control" id="editTtl" placeholder="Contoh: Surabaya, 15/01/1998">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-secondary">Alamat Domisili</label>
+              <input type="text" class="form-control" id="editAlamat">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-teal w-100 py-2.5 mt-4">
+            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 6: KOREKSI STATUS & JAM PRESENSI OLEH ADMIN -->
+<div class="modal fade" id="modalEditAbsensi" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 18px;">
+      <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
+        <div>
+          <h5 class="modal-title fw-bold">Koreksi Data Presensi</h5>
+          <p class="text-muted small mb-0" id="editAbsenSubtitle">Ubah jam masuk/pulang atau status kehadiran.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="formEditAbsensi" onsubmit="simpanEditAbsensi(event)">
+          <input type="hidden" id="editAbsenId">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Jam Masuk</label>
+              <input type="text" class="form-control fw-semibold" id="editAbsenMasuk" placeholder="08:00 atau -">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Jam Pulang</label>
+              <input type="text" class="form-control fw-semibold" id="editAbsenPulang" placeholder="17:00 atau -">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Status Kehadiran</label>
+            <select class="form-select fw-semibold" id="editAbsenStatus" required>
+              <option value="TEPAT_WAKTU">TEPAT WAKTU</option>
+              <option value="TERLAMBAT">TERLAMBAT</option>
+              <option value="IZIN">IZIN</option>
+              <option value="SAKIT">SAKIT</option>
+              <option value="CUTI">CUTI</option>
+              <option value="LUPA PULANG">LUPA PULANG</option>
+              <option value="ALPA">ALPA</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-teal w-100 py-2.5 mt-2">
+            <i class="fa-solid fa-check me-1"></i> Simpan Koreksi Presensi
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 7: CUSTOM KONFIRMASI MODERN (PENGGANTI CONFIRM BAWAAN BROWSER) -->
+<div class="modal fade" id="modalKonfirmasiCustom" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 410px;">
+    <div class="modal-content border-0 shadow-lg text-center p-3" style="border-radius: 22px;">
+      <div class="modal-body p-4">
+        <div id="confirmIconBox" class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; color: #16a34a; font-size: 26px;">
+          <i id="confirmIcon" class="fa-solid fa-circle-question"></i>
+        </div>
+        <h5 class="fw-extrabold text-dark mb-2" id="confirmTitle">Konfirmasi Tindakan</h5>
+        <p class="text-muted small mb-4" id="confirmMessage" style="line-height: 1.5;">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button type="button" class="btn btn-light border fw-bold px-4 py-2 rounded-3 w-50 text-secondary" data-bs-dismiss="modal">
+            Batal
+          </button>
+          <button type="button" class="btn fw-bold px-4 py-2 rounded-3 w-50 text-white" id="btnConfirmAction" style="background: #00695c;">
+            Ya, Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- TOAST NOTIFIKASI MELAYANG MODERN (PENGGANTI ALERT BAWAAN BROWSER) -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;">
+  <div id="toastNotifikasi" class="toast align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 14px; overflow: hidden;">
+    <div class="d-flex align-items-center px-3 py-2.5" id="toastBodyWrap" style="background: #0f172a; color: #fff;">
+      <i id="toastIcon" class="fa-solid fa-circle-check text-success fs-5 me-2"></i>
+      <div class="toast-body fw-semibold small flex-grow-1" id="toastMessage">
+        Berhasil memperbarui data.
+      </div>
+      <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ASISTEN AI HRD -->
+<div class="modal fade" id="modalAsistenAi" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content" style="border-radius: 22px; overflow: hidden;">
+      <div class="modal-header border-0 pb-3" style="position: relative; overflow: hidden; background: linear-gradient(145deg, #042f24 0%, #064e3b 30%, #047857 65%, #059669 88%, #10b981 100%);">
+        <!-- Topographic Contour SVG Ornament -->
+        <svg class="topography-svg" viewBox="0 0 450 120" preserveAspectRatio="none" style="position: absolute; right: 0; top: 0; bottom: 0; width: 380px; height: 100%; pointer-events: none; opacity: 0.75; z-index: 1;">
+          <path d="M 0 120 Q 110 30 230 75 T 450 45 L 450 120 Z" fill="url(#modalAiTopoGrad)"/>
+          <path d="M 0 120 Q 130 50 260 85 T 450 65" stroke="rgba(167, 243, 208, 0.45)" stroke-width="1.8" fill="none"/>
+          <circle cx="360" cy="60" r="60" stroke="#34d399" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35" fill="none"/>
+          <circle cx="360" cy="60" r="40" stroke="#6ee7b7" stroke-width="1.8" opacity="0.45" fill="none"/>
+          <circle cx="360" cy="60" r="20" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.2)" opacity="0.65"/>
+          <circle cx="360" cy="60" r="3.5" fill="#ffffff" opacity="0.95"/>
+          <defs>
+            <linearGradient id="modalAiTopoGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#042f24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="d-flex align-items-center" style="position: relative; z-index: 2;">
+          <div class="d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px; border-radius: 13px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="fa-solid fa-wand-magic-sparkles text-white fs-5"></i>
+          </div>
+          <div>
+            <h6 class="modal-title fw-bold text-white mb-0">Asisten AI HRD PT Fadiya Kencana</h6>
+            <small style="color: rgba(255,255,255,0.85); font-size: 11.5px;">Tanya apa saja tentang kehadiran, keterlambatan &amp; analisis kedisiplinan karyawan</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" style="position: relative; z-index: 2;" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="aiChatBox" style="height: 52vh; overflow-y: auto; padding: 18px 20px;">
+          <div class="ai-bubble ai-bot">
+            Halo! Saya <b>Asisten AI HRD</b> Fadiya Kencana. Saya membaca data presensi &amp; izin <b>62 hari terakhir</b> dari database kantor.
+            Silakan ajukan pertanyaan, atau pilih contoh di bawah.
+          </div>
+        </div>
+        <div class="px-3 pb-2 d-flex flex-wrap gap-2" id="aiSaranWrap">
+          <button class="btn btn-sm ai-chip" onclick="kirimSaranAi(this)">Siapa saja yang terlambat hari ini?</button>
+          <button class="btn btn-sm ai-chip" onclick="kirimSaranAi(this)">Siapa yang terlambat lebih dari 2 kali minggu ini?</button>
+          <button class="btn btn-sm ai-chip" onclick="kirimSaranAi(this)">Berapa persentase kehadiran tiap departemen bulan ini?</button>
+          <button class="btn btn-sm ai-chip" onclick="kirimSaranAi(this)">Buatkan ringkasan laporan kehadiran bulan ini untuk Direktur.</button>
+          <button class="btn btn-sm ai-chip" onclick="kirimSaranAi(this)">Adakah pola izin yang mencurigakan (misal sering izin di hari Senin/Jumat)?</button>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <form class="w-100 d-flex gap-2" onsubmit="kirimPertanyaanAi(event)">
+          <input type="text" class="form-control" id="aiInput" maxlength="1000" autocomplete="off"
+                 placeholder="Contoh: Siapa karyawan Produksi yang paling sering terlambat bulan ini?">
+          <button type="submit" class="btn btn-teal px-4" id="aiKirimBtn">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
+        <div class="w-100 d-flex justify-content-between align-items-center mt-1">
+          <small class="text-muted" style="font-size: 10.5px;"><i class="fa-solid fa-shield-halved me-1"></i>Hanya nama, NIP, departemen, jam &amp; status yang dikirim ke AI. Foto, GPS &amp; alamat tidak dikirim.</small>
+          <button type="button" class="btn btn-link btn-sm text-muted p-0" style="font-size: 11px;" onclick="resetChatAi()">Bersihkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL 8: REKAPITULASI PRESENSI & EVALUASI KEDISIPLINAN BULANAN (CYBER EMERALD THEME) -->
+<div class="modal fade" id="modalRekapPayroll" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; background: #041913; border: 1px solid rgba(52, 211, 153, 0.35) !important;">
+      
+      <!-- Modal Header with Topographic Contour & Resonance Gradient -->
+      <div class="modal-header border-bottom px-4 pt-3 pb-3">
+        <!-- Topographic Contour SVG Ornament -->
+        <svg class="topography-svg" viewBox="0 0 500 130" preserveAspectRatio="none">
+          <path d="M 0 130 Q 120 30 250 75 T 500 45 L 500 130 Z" fill="url(#modalTopoGrad)"/>
+          <path d="M 0 130 Q 140 50 280 90 T 500 65" stroke="rgba(167, 243, 208, 0.45)" stroke-width="1.8" fill="none"/>
+          <path d="M 0 130 Q 170 70 320 105 T 500 85" stroke="rgba(110, 231, 183, 0.35)" stroke-width="1.4" fill="none"/>
+          <path d="M 0 130 Q 200 90 360 115 T 500 100" stroke="rgba(52, 211, 153, 0.25)" stroke-width="1.2" fill="none"/>
+          <!-- Concentric Rings / Resonance Ripple -->
+          <circle cx="390" cy="65" r="75" stroke="#34d399" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35" fill="none"/>
+          <circle cx="390" cy="65" r="50" stroke="#6ee7b7" stroke-width="1.8" opacity="0.45" fill="none"/>
+          <circle cx="390" cy="65" r="24" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.2)" opacity="0.65"/>
+          <circle cx="390" cy="65" r="4" fill="#ffffff" opacity="0.95"/>
+          <!-- Sparkles -->
+          <circle cx="340" cy="30" r="2.5" fill="#ffffff" opacity="0.9"/>
+          <circle cx="340" cy="30" r="6" fill="#34d399" opacity="0.35"/>
+          <circle cx="430" cy="40" r="2" fill="#ffffff" opacity="0.9"/>
+          <circle cx="280" cy="55" r="2" fill="#ffffff" opacity="0.8"/>
+          <defs>
+            <linearGradient id="modalTopoGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#042f24" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="modal-header-content d-flex align-items-center">
+          <div class="me-3 p-2.5 rounded-3 text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="fa-solid fa-clipboard-check fs-5 text-warning"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-white mb-0" style="letter-spacing: -0.3px;">Laporan Rekapitulasi Presensi &amp; Kedisiplinan</h5>
+            <p class="text-white-50 small mb-0" style="font-size: 11.5px;">Akumulasi presensi, kepatuhan jam kerja, keterlambatan, dan evaluasi kedisiplinan bulanan.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" style="position: relative; z-index: 2;" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-4" style="background: #041913;">
+        
+        <!-- Filter Controls Card -->
+        <div class="card card-filter-rekap border-0 p-3 mb-3">
+          <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-white-50 mb-1">Periode Bulan</label>
+              <input type="month" class="form-control form-control-sm fw-bold text-white" id="payrollBulan" onchange="muatDataPayroll()" style="background: rgba(3, 20, 15, 0.85); border: 1px solid rgba(52, 211, 153, 0.35);">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-white-50 mb-1">Departemen / Divisi</label>
+              <select class="form-select form-select-sm fw-semibold text-white" id="payrollDept" onchange="muatDataPayroll()" style="background: rgba(3, 20, 15, 0.85); border: 1px solid rgba(52, 211, 153, 0.35);">
+                <option value="SEMUA" selected>Semua Departemen</option>
+                <option value="Produksi Pabrik">Produksi Pabrik</option>
+                <option value="IT & Sistem Informasi">IT & Sistem Informasi</option>
+                <option value="Human Resources (HR)">Human Resources (HR)</option>
+                <option value="Keuangan & Akuntansi">Keuangan & Akuntansi</option>
+                <option value="Operasional & Logistik">Operasional & Logistik</option>
+                <option value="Quality Control (QC)">Quality Control (QC)</option>
+                <option value="Maintenance & Teknik">Maintenance & Teknik</option>
+                <option value="Gudang & Material">Gudang & Material</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small fw-bold text-white-50 mb-1" title="Hari kerja standar sebulan">Hari Kerja Efektif</label>
+              <div class="input-group input-group-sm">
+                <input type="number" class="form-control fw-bold text-center text-white" id="payrollHariKerja" value="22" min="1" max="31" onchange="muatDataPayroll()" style="background: rgba(3, 20, 15, 0.85); border: 1px solid rgba(52, 211, 153, 0.35);">
+                <span class="input-group-text text-white-50" style="background: rgba(6, 78, 59, 0.6); border: 1px solid rgba(52, 211, 153, 0.35); border-left: none;">Hari</span>
+              </div>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+              <button class="btn btn-success btn-sm w-50 fw-bold py-1.5 shadow-sm rounded-pill" onclick="exportPayrollExcel()" title="Unduh File Excel (.xls) Laporan Presensi Resmi" style="background: linear-gradient(135deg, #059669, #10b981); border: 1px solid rgba(110, 231, 183, 0.4);">
+                <i class="fa-solid fa-file-excel me-1.5"></i> Export Excel
+              </button>
+              <button class="btn btn-danger btn-sm w-50 fw-bold py-1.5 shadow-sm rounded-pill" onclick="exportPayrollPDF()" title="Cetak / Simpan Dokumen PDF Landscape Resmi">
+                <i class="fa-solid fa-file-pdf me-1.5"></i> Cetak PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI Ringkasan Eksekutif -->
+        <div class="row g-2 mb-3">
+          <div class="col-md-3">
+            <div class="rekap-kpi-card p-2.5 shadow-sm d-flex align-items-center">
+              <div class="p-2 rounded-2 text-white me-2.5 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(56, 189, 248, 0.2); color: #38bdf8 !important;">
+                <i class="fa-solid fa-users fs-5"></i>
+              </div>
+              <div>
+                <small class="text-white-50 d-block" style="font-size: 11px;">Karyawan Terdata</small>
+                <span class="h6 fw-bold mb-0 text-white" id="payrollKpiTotalKaryawan">0 Orang</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="rekap-kpi-card p-2.5 shadow-sm d-flex align-items-center">
+              <div class="p-2 rounded-2 text-white me-2.5 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(16, 185, 129, 0.2); color: #34d399 !important;">
+                <i class="fa-solid fa-chart-line fs-5"></i>
+              </div>
+              <div>
+                <small class="text-white-50 d-block" style="font-size: 11px;">Rata-rata Kehadiran</small>
+                <span class="h6 fw-bold mb-0" style="color: #34d399;" id="payrollKpiRataHadir">0%</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="rekap-kpi-card p-2.5 shadow-sm d-flex align-items-center">
+              <div class="p-2 rounded-2 text-white me-2.5 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(245, 158, 11, 0.2); color: #fbbf24 !important;">
+                <i class="fa-solid fa-clock-rotate-left fs-5"></i>
+              </div>
+              <div>
+                <small class="text-white-50 d-block" style="font-size: 11px;">Total Terlambat</small>
+                <span class="h6 fw-bold mb-0" style="color: #fbbf24;" id="payrollKpiTotalTerlambat">0x (0 mnt)</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="rekap-kpi-card p-2.5 shadow-sm d-flex align-items-center">
+              <div class="p-2 rounded-2 text-white me-2.5 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(56, 189, 248, 0.2); color: #38bdf8 !important;">
+                <i class="fa-solid fa-envelope-open-text fs-5"></i>
+              </div>
+              <div>
+                <small class="text-white-50 d-block" style="font-size: 11px;">Total Izin &amp; Sakit</small>
+                <span class="h6 fw-bold mb-0" style="color: #38bdf8;" id="payrollKpiTotalIzin">0 Hari</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Pratinjau Rekapitulasi Presensi & Kedisiplinan -->
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 18px; background: #03140e !important; border: 1px solid rgba(52, 211, 153, 0.28) !important;">
+          <div class="table-responsive" style="max-height: 420px;">
+            <table class="table table-sm align-middle mb-0" id="payrollPreviewTable" style="font-size: 12px; background: #03140e !important;">
+              <thead class="sticky-top text-center" style="background: #022018; border-bottom: 2px solid #10b981; color: #a7f3d0;">
+                <tr>
+                  <th style="width: 40px; padding: 10px 6px;">No</th>
+                  <th style="padding: 10px 8px;">NIP</th>
+                  <th style="padding: 10px 10px;">Nama Karyawan</th>
+                  <th style="padding: 10px 10px;">Departemen</th>
+                  <th style="padding: 10px 6px;" title="Hari Kerja Efektif">HK</th>
+                  <th style="padding: 10px 6px;" title="Total Hadir">Hadir</th>
+                  <th style="padding: 10px 6px;" title="Tepat Waktu">Tepat</th>
+                  <th style="padding: 10px 6px;" title="Terlambat">Telat</th>
+                  <th style="padding: 10px 8px;" title="Akumulasi Menit Terlambat">Menit Telat</th>
+                  <th style="padding: 10px 6px;" title="Izin / Sakit / Cuti">Izin</th>
+                  <th style="padding: 10px 6px;" title="Alpa / Tanpa Keterangan">Alpa</th>
+                  <th style="padding: 10px 6px;" title="Persentase Kehadiran">% Hadir</th>
+                  <th style="padding: 10px 10px;">Status Disiplin</th>
+                </tr>
+              </thead>
+              <tbody id="payrollTableBody">
+                <tr><td colspan="13" class="text-center py-4 text-white-50"><i class="fa-solid fa-spinner fa-spin me-2" style="color: #10b981;"></i>Memuat data rekapitulasi presensi...</td></tr>
+              </tbody>
+              <tfoot class="fw-bold text-center" id="payrollTableFoot" style="background: #022018; border-top: 2px solid #10b981; color: #f8fafc;">
+                <!-- Diisi otomatis oleh JavaScript -->
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-2 px-1">
+          <small class="text-white-50" style="font-size: 11px;">
+            <i class="fa-solid fa-info-circle me-1" style="color: #34d399;"></i> <strong>Keterangan Rumus:</strong> HK = Hari Kerja Efektif | Alpa = HK - (Hadir + Izin) | % Hadir = (Hadir + Izin) / HK &times; 100%
+          </small>
+          <small class="text-white-50" style="font-size: 11px;">
+            Batas Toleransi: <span id="payrollInfoBatasTerlambat" class="fw-bold" style="color: #fbbf24;">08:15</span>
+          </small>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer px-4 py-2 border-top d-flex justify-content-between" style="background: #022018; border-color: rgba(52, 211, 153, 0.25) !important;">
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-white border-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm rounded-pill px-3 fw-bold" onclick="exportPayrollExcel()" style="background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none;">
+            <i class="fa-solid fa-file-excel me-1"></i> Download File Excel (.xls)
+          </button>
+          <button type="button" class="btn btn-danger btn-sm rounded-pill px-3 fw-bold" onclick="exportPayrollPDF()">
+            <i class="fa-solid fa-print me-1"></i> Cetak Dokumen PDF
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .ai-bubble { max-width: 88%; padding: 11px 15px; border-radius: 16px; margin-bottom: 12px; font-size: 13.5px; line-height: 1.55; word-wrap: break-word; }
+  .ai-bot { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; border-top-left-radius: 4px; }
+  .ai-user { background: linear-gradient(135deg, #1e4e24 0%, #358b2e 45%, #62b73c 100%); color: #fff; margin-left: auto; border-top-right-radius: 4px; }
+  .ai-error { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(251, 113, 133, 0.3); color: #fda4af; }
+  .ai-bot table { width: 100%; margin: 8px 0; font-size: 12.5px; border-collapse: collapse; }
+  .ai-bot th, .ai-bot td { border: 1px solid rgba(255,255,255,0.12); padding: 5px 8px; }
+  .ai-bot th { background: rgba(255,255,255,0.05); }
+  .ai-bot ul, .ai-bot ol { padding-left: 20px; margin: 6px 0; }
+  .ai-chip { background: rgba(22, 163, 74, 0.12); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.28); border-radius: 999px; font-size: 11.5px; }
+  .ai-chip:hover { background: rgba(22, 163, 74, 0.22); color: #86efac; }
+  .ai-typing span { display: inline-block; width: 7px; height: 7px; margin-right: 3px; border-radius: 50%; background: #4ade80; animation: aiBlink 1.2s infinite; }
+  .ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes aiBlink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  let currentTab = 'karyawan';
+  let masterKaryawan = [];
+  let rekapAbsensi = [];
+  let daftarPengajuanIzin = [];
+  let pendingConfirmCallback = null;
+
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('toastNotifikasi');
+    const iconEl = document.getElementById('toastIcon');
+    const msgEl = document.getElementById('toastMessage');
+    const wrapEl = document.getElementById('toastBodyWrap');
+
+    msgEl.innerText = message;
+    if (type === 'error' || type === 'danger') {
+      wrapEl.style.background = '#991b1b';
+      iconEl.className = 'fa-solid fa-circle-exclamation text-warning fs-5 me-2';
+    } else if (type === 'warning') {
+      wrapEl.style.background = '#92400e';
+      iconEl.className = 'fa-solid fa-triangle-exclamation text-warning fs-5 me-2';
+    } else {
+      wrapEl.style.background = '#0f172a';
+      iconEl.className = 'fa-solid fa-circle-check text-info fs-5 me-2';
+    }
+
+    const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3200 });
+    toast.show();
+  }
+
+  function showConfirmModal({ title, message, confirmText = 'Ya, Lanjutkan', variant = 'teal', icon = 'fa-circle-question', onConfirm }) {
+    document.getElementById('confirmTitle').innerText = title;
+    document.getElementById('confirmMessage').innerText = message;
+
+    const iconBox = document.getElementById('confirmIconBox');
+    const iconEl = document.getElementById('confirmIcon');
+    const btnConfirm = document.getElementById('btnConfirmAction');
+
+    iconEl.className = `fa-solid ${icon}`;
+    btnConfirm.innerText = confirmText;
+
+    if (variant === 'danger') {
+      iconBox.style.background = '#ffe4e6';
+      iconBox.style.color = '#e11d48';
+      btnConfirm.style.background = '#e11d48';
+    } else if (variant === 'warning') {
+      iconBox.style.background = '#fef3c7';
+      iconBox.style.color = '#d97706';
+      btnConfirm.style.background = '#d97706';
+    } else if (variant === 'success') {
+      iconBox.style.background = '#dcfce7';
+      iconBox.style.color = '#16a34a';
+      btnConfirm.style.background = '#16a34a';
+    } else {
+      iconBox.style.background = '#e0f2f1';
+      iconBox.style.color = '#00695c';
+      btnConfirm.style.background = '#00695c';
+    }
+
+    pendingConfirmCallback = onConfirm;
+    const modalEl = document.getElementById('modalKonfirmasiCustom');
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modalInstance.show();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const btnConfirm = document.getElementById('btnConfirmAction');
+    if (btnConfirm) {
+      btnConfirm.addEventListener('click', async function() {
+        const modalEl = document.getElementById('modalKonfirmasiCustom');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        if (typeof pendingConfirmCallback === 'function') {
+          const cb = pendingConfirmCallback;
+          pendingConfirmCallback = null;
+          await cb();
+        }
+      });
+    }
+  });
+
+  const tzOff = (new Date()).getTimezoneOffset() * 60000;
+  const defaultTanggal = (new Date(Date.now() - tzOff)).toISOString().split('T')[0]; // YYYY-MM-DD
+  const defaultBulan = defaultTanggal.substring(0, 7); // YYYY-MM
+
+  let fpInstance = null;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('izinTanggalInput').value = defaultTanggal;
+    const el = document.getElementById('filterBulan');
+    if (el) el.value = defaultTanggal;
+    window.currentTanggalFilter = defaultTanggal;
+    initFlatpickr();
+  });
+
+  function initFlatpickr() {
+    const inputEl = document.getElementById('filterBulanInput');
+    if (!inputEl) return;
+    const currentVal = window.currentTanggalFilter || defaultTanggal;
+
+    if (typeof flatpickr !== 'undefined') {
+      fpInstance = flatpickr(inputEl, {
+        locale: (typeof flatpickr.l10ns !== 'undefined' && flatpickr.l10ns.id) ? flatpickr.l10ns.id : 'default',
+        dateFormat: 'Y-m-d',
+        defaultDate: currentVal,
+        altInput: true,
+        altFormat: 'l, j F Y',
+        altInputClass: 'form-control form-control-sm text-center fw-bold text-white',
+        disableMobile: true,
+        animate: true,
+        onChange: function(selectedDates, dateStr) {
+          if (dateStr) {
+            document.getElementById('filterBulan').value = dateStr;
+            window.currentTanggalFilter = dateStr;
+            if (currentTab === 'log_harian') {
+              const modeEl = document.getElementById('modeLogHarian');
+              if (modeEl && modeEl.value === 'BULAN') {
+                setModeLog('TANGGAL');
+                return;
+              }
+            }
+            initData();
+          }
+        }
+      });
+    } else {
+      inputEl.type = 'date';
+      inputEl.value = currentVal;
+      inputEl.onchange = function() {
+        document.getElementById('filterBulan').value = this.value;
+        window.currentTanggalFilter = this.value;
+        initData();
+      };
+    }
+  }
+
+  function updateDisplayTanggal(tglStr) {
+    if (fpInstance) {
+      fpInstance.setDate(tglStr, false);
+    } else {
+      const el = document.getElementById('filterBulanInput');
+      if (el) el.value = tglStr;
+    }
+  }
+
+  function geserTanggal(offset) {
+    const modeEl = document.getElementById('modeLogHarian');
+    const modeLog = modeEl ? modeEl.value : 'BULAN';
+    let curStr = window.currentTanggalFilter || defaultTanggal;
+    let parts = curStr.split('-');
+    let d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2] || '1', 10));
+
+    if (currentTab === 'rekap_bulanan' || (currentTab === 'log_harian' && modeLog === 'BULAN')) {
+      // Geser 1 bulan ke depan / belakang
+      d.setMonth(d.getMonth() + offset);
+    } else {
+      // Geser 1 hari ke depan / belakang
+      d.setDate(d.getDate() + offset);
+    }
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const newDateStr = `${year}-${month}-${day}`;
+
+    window.currentTanggalFilter = newDateStr;
+    const elBulan = document.getElementById('filterBulan');
+    if (elBulan) elBulan.value = newDateStr;
+
+    updateDisplayTanggal(newDateStr);
+    initData();
+  }
+
+  function resetKeHariIni() {
+    window.currentTanggalFilter = defaultTanggal;
+    const elBulan = document.getElementById('filterBulan');
+    if (elBulan) elBulan.value = defaultTanggal;
+
+    updateDisplayTanggal(defaultTanggal);
+    initData();
+  }
+
+  function setModeLog(mode) {
+    const modeEl = document.getElementById('modeLogHarian');
+    if (modeEl) modeEl.value = mode;
+
+    const labelEl = document.getElementById('modeDisplayLabel');
+    const badgeBtn = document.getElementById('btnModeDropdown');
+
+    if (mode === 'TANGGAL') {
+      if (labelEl) labelEl.innerHTML = '<i class="fa-regular fa-calendar me-1"></i> Per Tanggal';
+      if (badgeBtn) badgeBtn.style.cssText = 'font-size: 11px; height: 22px; background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35);';
+    } else if (mode === 'BULAN') {
+      if (labelEl) labelEl.innerHTML = '<i class="fa-solid fa-calendar-days me-1"></i> 1 Bulan Penuh';
+      if (badgeBtn) badgeBtn.style.cssText = 'font-size: 11px; height: 22px; background: rgba(5, 150, 105, 0.22); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35);';
+    } else if (mode === 'BELUM_ABSEN') {
+      if (labelEl) labelEl.innerHTML = '<i class="fa-regular fa-clock me-1"></i> Belum Absen';
+      if (badgeBtn) badgeBtn.style.cssText = 'font-size: 11px; height: 22px; background: rgba(245, 158, 11, 0.22); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.35);';
+    }
+
+    applyFilters();
+  }
+
+  function getBulanSelected() {
+    const el = document.getElementById('filterBulan');
+    if (el && el.value) {
+      return el.value.substring(0, 7);
+    }
+    return defaultBulan;
+  }
+
+  function onDateFilterChange() {
+    const el = document.getElementById('filterBulan');
+    if (el && el.value) {
+      window.currentTanggalFilter = el.value;
+      updateDisplayTanggal(el.value);
+      // Saat admin memilih tanggal spesifik di kalender pada tab Log Harian, otomatis filter ke tanggal tersebut
+      if (currentTab === 'log_harian') {
+        const modeEl = document.getElementById('modeLogHarian');
+        if (modeEl && modeEl.value === 'BULAN') {
+          setModeLog('TANGGAL');
+          return;
+        }
+      }
+    }
+    initData();
+  }
+
+  async function initData() {
+    const bulanSelected = getBulanSelected();
+    const elBulan = document.getElementById('filterBulan');
+    const tanggalSelected = (elBulan && elBulan.value) ? elBulan.value : defaultTanggal;
+    window.currentTanggalFilter = tanggalSelected;
+
+    try {
+      // 1. Ambil Master Karyawan + Rekap Bulanan
+      const resKaryawan = await fetch(`/api/admin/karyawan?bulan=${bulanSelected}`);
+      if (resKaryawan.ok) {
+        const jsonK = await resKaryawan.json();
+        masterKaryawan = jsonK.data || (Array.isArray(jsonK) ? jsonK : []);
+      }
+
+      populateDropdownKaryawan();
+
+      // 2. Ambil Data Presensi & Konfigurasi Kantor
+      const resAbsen = await fetch(`/api/admin/absensi?bulan=${bulanSelected}`);
+      if (resAbsen.ok) {
+        const jsonA = await resAbsen.json();
+        rekapAbsensi = jsonA.data || [];
+
+        document.getElementById('statTotalKaryawan').innerText = jsonA.total_karyawan || masterKaryawan.length || 0;
+        document.getElementById('statDeviceBound').innerText = jsonA.total_terikat_device || 0;
+        document.getElementById('statHadirBulanIni').innerText = jsonA.total_hadir_bulan_ini || 0;
+        document.getElementById('statHadirHariIni').innerText = jsonA.total_hadir || 0;
+        document.getElementById('statIzinBulanIni').innerText = jsonA.total_izin_bulan_ini || 0;
+        document.getElementById('statTerlambatBulanIni').innerText = jsonA.total_terlambat_bulan_ini || 0;
+        document.getElementById('statTerlambatHariIni').innerText = jsonA.total_terlambat || 0;
+
+        if (jsonA.config) {
+          const jm = jsonA.config.jam_masuk || '08:00';
+          const jp = jsonA.config.jam_pulang || '17:00';
+          const bt = jsonA.config.batas_terlambat || jm;
+          const peng = jsonA.config.pengumuman || 'Pengumuman: Jam kerja resmi kantor dimulai pukul 08:00 WIB.';
+          const lokNama = jsonA.config.lokasi_nama || 'Kantor Pusat PT Fadiya Kencana';
+          const lokLat = jsonA.config.lokasi_latitude !== undefined ? jsonA.config.lokasi_latitude : -7.58854;
+          const lokLng = jsonA.config.lokasi_longitude !== undefined ? jsonA.config.lokasi_longitude : 110.79566;
+          const rad = jsonA.config.radius_meter !== undefined ? jsonA.config.radius_meter : 100;
+          const wajibRad = (jsonA.config.wajib_dalam_radius == 1 || jsonA.config.wajib_dalam_radius === true);
+
+          document.getElementById('infoJamKerja').innerText = `${jm} - ${jp}`;
+          document.getElementById('infoBatasTerlambat').innerText = bt;
+          document.getElementById('infoPengumuman').innerText = peng;
+
+          const infoLok = document.getElementById('infoLokasiKantor');
+          if (infoLok) infoLok.innerText = lokNama;
+          const infoRad = document.getElementById('infoRadiusKantor');
+          if (infoRad) infoRad.innerText = `${rad}m`;
+
+          const badgeGeo = document.getElementById('badgeStatusRadius');
+          if (badgeGeo) {
+            if (wajibRad) {
+              badgeGeo.className = 'badge bg-danger text-white fw-bold';
+              badgeGeo.innerHTML = `<i class="fa-solid fa-shield-halved me-1"></i> Geofence Wajib (${rad}m)`;
+            } else {
+              badgeGeo.className = 'badge bg-info text-dark fw-bold';
+              badgeGeo.innerHTML = `<i class="fa-solid fa-location-dot me-1"></i> Geofence Fleksibel (${rad}m)`;
+            }
+          }
+
+          document.getElementById('cfgJamMasuk').value = jm;
+          document.getElementById('cfgBatasTerlambat').value = bt;
+          document.getElementById('cfgJamPulang').value = jp;
+          document.getElementById('cfgPengumuman').value = peng;
+          document.getElementById('cfgLokasiNama').value = lokNama;
+          document.getElementById('cfgLokasiLat').value = lokLat;
+          document.getElementById('cfgLokasiLng').value = lokLng;
+          document.getElementById('cfgRadiusMeter').value = rad;
+          document.getElementById('labelRadiusTerpilih').innerText = `${rad} Meter`;
+          document.getElementById('cfgWajibRadius').checked = wajibRad;
+        }
+      }
+
+      // 3. Ambil Daftar Pengajuan Izin & Cuti
+      const resIzin = await fetch('/api/admin/izin');
+      if (resIzin.ok) {
+        const jsonIzin = await resIzin.json();
+        daftarPengajuanIzin = jsonIzin.data || [];
+        const pendingCount = daftarPengajuanIzin.filter(i => (i.status || '').toLowerCase() === 'pending').length;
+
+        const badgeEl = document.getElementById('badgePendingIzin');
+        const pendingTextEl = document.getElementById('statPendingIzinText');
+        if (pendingTextEl) pendingTextEl.innerText = pendingCount;
+        if (badgeEl) {
+          badgeEl.innerText = pendingCount;
+          badgeEl.classList.toggle('d-none', pendingCount === 0);
+        }
+      }
+    } catch (e) {
+      console.error('Koneksi server gagal:', e);
+    }
+
+    switchTab(currentTab, false);
+  }
+
+  function populateDropdownKaryawan() {
+    const select = document.getElementById('izinKaryawanSelect');
+    select.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+    masterKaryawan.forEach(k => {
+      const nip = k.nip || k.nik || k.id;
+      select.innerHTML += `<option value="${nip}">${nip} - ${k.nama} (${k.dept || k.departemen || 'Produksi'})</option>`;
+    });
+  }
+
+  function switchTab(tab, resetToggle = true) {
+    currentTab = tab;
+    document.getElementById('navKaryawan').classList.toggle('active', tab === 'karyawan');
+    document.getElementById('navLogHarian').classList.toggle('active', tab === 'log_harian');
+    document.getElementById('navRekapBulanan').classList.toggle('active', tab === 'rekap_bulanan');
+    document.getElementById('navPengajuanIzin').classList.toggle('active', tab === 'pengajuan_izin');
+
+    const titleMap = {
+      'karyawan': 'Data Master Karyawan',
+      'log_harian': 'Log Presensi & Lokasi GPS Harian',
+      'rekap_bulanan': 'Rekapitulasi Presensi Bulanan',
+      'pengajuan_izin': 'Daftar Permohonan Izin & Sakit Karyawan'
+    };
+    const subtitleMap = {
+      'karyawan': 'Kelola identitas karyawan, perangkat HP tertaut, dan penambahan personel.',
+      'log_harian': 'Pantau waktu kehadiran, bukti swafoto ber-watermark, dan titik koordinat GPS realtime saat karyawan absen.',
+      'rekap_bulanan': 'Ringkasan akumulasi hadir, izin/sakit, dan keterlambatan setiap karyawan per bulan.',
+      'pengajuan_izin': 'Verifikasi permohonan izin, sakit, atau cuti yang diajukan karyawan dari aplikasi Android.'
+    };
+
+    document.getElementById('pageTitle').innerText = titleMap[tab] || 'Dashboard Admin';
+    document.getElementById('pageSubtitle').innerText = subtitleMap[tab] || '';
+    document.getElementById('btnTambah').style.display = tab === 'karyawan' ? 'inline-block' : 'none';
+    document.getElementById('wrapSemuaTanggal').classList.toggle('d-none', tab !== 'log_harian');
+
+    const header = document.getElementById('tableHeader');
+    if (tab === 'karyawan') {
+      header.innerHTML = `<th>NIP</th><th>Nama Lengkap</th><th>L/P</th><th>Tempat, Tgl Lahir</th><th>Domisili</th><th>Departemen</th><th>Status HP</th><th class="text-end">Aksi</th>`;
+    } else if (tab === 'rekap_bulanan') {
+      header.innerHTML = `<th>NIP</th><th>Nama Karyawan</th><th>Departemen</th><th>Periode</th><th>Total Hadir</th><th>Izin / Sakit</th><th>Terlambat</th><th class="text-end">Detail Log</th>`;
+    } else if (tab === 'pengajuan_izin') {
+      header.innerHTML = `<th>Diajukan</th><th>NIP & Nama Karyawan</th><th>Departemen</th><th>Jenis</th><th>Tanggal Izin</th><th>Alasan / Keterangan</th><th>Status</th><th class="text-end">Tindakan Admin</th>`;
+    } else {
+      header.innerHTML = `<th>Tanggal</th><th>NIP & Nama Karyawan</th><th>Departemen</th><th>Jam Masuk / Pulang</th><th>Bukti Swafoto</th><th>Lokasi GPS Realtime</th><th>Status</th><th class="text-end">Koreksi</th>`;
+    }
+
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const deptSelected = document.getElementById('filterDept').value;
+    const bulanSelected = getBulanSelected();
+    const searchKeyword = document.getElementById('searchKeyword').value.toLowerCase();
+    const modeLogEl = document.getElementById('modeLogHarian');
+    const modeLog = modeLogEl ? modeLogEl.value : 'BULAN';
+    const tampilkanSatuBulan = (modeLog === 'BULAN');
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    // TAB 1: MASTER KARYAWAN
+    if (currentTab === 'karyawan') {
+      let filtered = masterKaryawan.filter(item => {
+        const nipVal = (item.nip || item.nik || '').toLowerCase();
+        const namaVal = (item.nama || '').toLowerCase();
+        const deptVal = item.dept || item.departemen || '';
+        const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+        const matchSearch = namaVal.includes(searchKeyword) || nipVal.includes(searchKeyword);
+        return matchDept && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-5"><i class="fa-regular fa-folder-open fs-3 mb-2 d-block"></i>Belum ada data karyawan yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(k => {
+        const nip = k.nip || k.nik || '-';
+        const initial = k.nama ? k.nama.charAt(0).toUpperCase() : 'K';
+        const tmp = (k.tempat_lahir && k.tempat_lahir !== '-') ? k.tempat_lahir : '';
+        const tgl = (k.tanggal_lahir && k.tanggal_lahir !== '-') ? k.tanggal_lahir : '';
+        const ttlDisplay = k.ttl && k.ttl !== '-' ? k.ttl : ((tmp || tgl) ? `${tmp}${tmp && tgl ? ', ' : ''}${tgl}` : '-');
+        const jkDisplay = (k.jk === 'P' || k.jenis_kelamin === 'P' || k.jenis_kelamin === 'Perempuan') ? 'P' : 'L';
+        const isBound = k.device_id && k.device_id !== '-';
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="fw-bold" style="color: #00695c;">${nip}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar-circle">${initial}</span>
+                <span class="fw-semibold text-dark">${k.nama}</span>
+              </div>
+            </td>
+            <td><span class="badge ${jkDisplay === 'P' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} px-2.5 py-1">${jkDisplay}</span></td>
+            <td>${ttlDisplay}</td>
+            <td>${k.alamat || '-'}</td>
+            <td><span class="badge badge-dept">${k.dept || k.departemen || 'Produksi Pabrik'}</span></td>
+            <td>
+              ${isBound
+                ? `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="fa-solid fa-mobile-screen-button me-1"></i>Tertaut</span>`
+                : `<span class="badge bg-light text-secondary border px-2 py-1">Belum Tertaut</span>`}
+            </td>
+            <td class="text-end text-nowrap">
+              <button class="btn btn-outline-primary btn-sm fw-semibold px-2.5" onclick="openEditKaryawanModal('${nip}')" title="Edit Data Karyawan">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button class="btn btn-outline-warning btn-sm fw-semibold px-2.5 ms-1" onclick="resetHp('${nip}', '${k.nama}')" title="Lepas Tautan Perangkat HP">
+                <i class="fa-solid fa-mobile-retro me-1"></i> Reset HP
+              </button>
+              <button class="btn btn-outline-danger btn-sm ms-1 px-2.5" onclick="hapusKaryawan('${nip}')" title="Hapus Data Karyawan">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // TAB 2: REKAP BULANAN
+    else if (currentTab === 'rekap_bulanan') {
+      let filtered = masterKaryawan.filter(item => {
+        const nipVal = (item.nip || item.nik || '').toLowerCase();
+        const namaVal = (item.nama || '').toLowerCase();
+        const deptVal = item.dept || item.departemen || '';
+        const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+        const matchSearch = namaVal.includes(searchKeyword) || nipVal.includes(searchKeyword);
+        return matchDept && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-5">Belum ada data rekapitulasi bulanan karyawan.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(k => {
+        const nip = k.nip || k.nik || '-';
+        const initial = k.nama ? k.nama.charAt(0).toUpperCase() : 'K';
+        const totalHadir = k.total_hadir_bulan_ini || 0;
+        const totalIzin = k.total_izin_bulan_ini || 0;
+        const totalTerlambat = k.total_terlambat_bulan_ini || 0;
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="fw-bold" style="color: #00695c;">${nip}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar-circle">${initial}</span>
+                <span class="fw-semibold">${k.nama}</span>
+              </div>
+            </td>
+            <td><span class="badge badge-dept">${k.dept || k.departemen || 'Produksi Pabrik'}</span></td>
+            <td><span class="badge bg-light text-dark border px-2.5 py-1">${bulanSelected}</span></td>
+            <td><span class="pill-status hadir"><i class="fa-solid fa-user-check"></i> ${totalHadir} Hari</span></td>
+            <td><span class="pill-status ${totalIzin > 0 ? 'izin' : 'bg-light text-muted'}"><i class="fa-solid fa-notes-medical"></i> ${totalIzin} Hari</span></td>
+            <td><span class="pill-status ${totalTerlambat > 0 ? 'terlambat' : 'bg-light text-muted'}"><i class="fa-solid fa-clock-rotate-left"></i> ${totalTerlambat} Hari</span></td>
+            <td class="text-end">
+              <button class="btn btn-outline-primary btn-sm fw-semibold px-2.5" onclick="viewUserLog('${nip}')">
+                <i class="fa-solid fa-location-crosshairs me-1"></i> Lihat Log & GPS
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // TAB 3: PERMOHONAN IZIN & CUTI
+    else if (currentTab === 'pengajuan_izin') {
+      let filtered = daftarPengajuanIzin.filter(item => {
+        const nipVal = (item.nip || '').toLowerCase();
+        const namaVal = (item.nama || '').toLowerCase();
+        const deptVal = item.departemen || '';
+        const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+        const matchSearch = namaVal.includes(searchKeyword) || nipVal.includes(searchKeyword);
+        return matchDept && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-5"><i class="fa-regular fa-envelope-open fs-3 mb-2 d-block"></i>Belum ada pengajuan izin atau sakit dari karyawan.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const initial = item.nama ? item.nama.charAt(0).toUpperCase() : 'K';
+        const tglMulai = formatTanggalDisplay(item.tanggal_mulai);
+        const tglSelesai = formatTanggalDisplay(item.tanggal_selesai);
+        const periodeStr = (tglMulai === tglSelesai) ? tglMulai : `${tglMulai} s/d ${tglSelesai}`;
+        const tglAjuan = formatTanggalDisplay(item.created_at);
+
+        const statusRaw = (item.status || 'Pending').trim();
+        const statusLower = statusRaw.toLowerCase();
+        let statusPill = `<span class="pill-status pending"><i class="fa-regular fa-hourglass-half"></i> Menunggu</span>`;
+        if (statusLower.startsWith('disetujui')) {
+          statusPill = `<span class="pill-status hadir"><i class="fa-solid fa-check"></i> ${statusRaw}</span>`;
+        } else if (statusLower.startsWith('ditolak')) {
+          statusPill = `<span class="pill-status ditolak"><i class="fa-solid fa-xmark"></i> ${statusRaw}</span>`;
+        }
+
+        const deleteIzinBtn = `
+          <button class="btn btn-outline-danger btn-sm px-2.5 rounded-pill ms-1" onclick="hapusIzin(${item.id}, '${escapeHtmlAi(item.nama)}')" title="Hapus Data Izin">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        `;
+
+        const actionBtns = (statusLower === 'pending')
+          ? `
+            <button class="btn btn-success btn-sm fw-semibold px-2.5 rounded-pill" onclick="updateStatusIzin(${item.id}, 'Disetujui')">
+              <i class="fa-solid fa-check me-1"></i> Setujui
+            </button>
+            <button class="btn btn-outline-warning btn-sm fw-semibold px-2.5 rounded-pill ms-1" onclick="updateStatusIzin(${item.id}, 'Ditolak')">
+              <i class="fa-solid fa-xmark me-1"></i> Tolak
+            </button>
+            ${deleteIzinBtn}
+          `
+          : `
+            <span class="text-muted small me-1">Selesai diverifikasi</span>
+            ${deleteIzinBtn}
+          `;
+
+        const buktiFotoHtml = (item.bukti_foto && item.bukti_foto !== '-')
+          ? `<div class="mt-1"><button class="btn btn-sm btn-outline-info py-0 px-2 fw-semibold" style="font-size: 11px;" onclick="showFotoModal('${item.bukti_foto}', '${item.nama}', '${item.nip || '-'}', 'Lampiran Bukti Izin / Surat Dokter (${item.jenis_izin || 'Izin'})', '-')"><i class="fa-solid fa-paperclip me-1"></i>Lihat Bukti Foto</button></div>`
+          : '';
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="text-muted small">${tglAjuan}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar-circle">${initial}</span>
+                <div>
+                  <div class="fw-semibold text-dark">${item.nama}</div>
+                  <div class="text-muted" style="font-size: 11px;">NIP: ${item.nip || '-'}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-dept">${item.departemen || 'Produksi Pabrik'}</span></td>
+            <td><span class="pill-status izin">${item.jenis_izin || 'Izin'}</span></td>
+            <td class="fw-semibold">${periodeStr}</td>
+            <td><div>${item.alasan || '-'}</div>${buktiFotoHtml}</td>
+            <td>${statusPill}</td>
+            <td class="text-end text-nowrap">${actionBtns}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // TAB 4: LOG PRESENSI & LOKASI GPS HARIAN
+    else {
+      // Mode Khusus: Tampilkan Karyawan yang Belum Absen pada Tanggal Dipilih
+      if (modeLog === 'BELUM_ABSEN') {
+        const targetDate = window.currentTanggalFilter || defaultTanggal;
+        const sudahAbsenNips = new Set(
+          rekapAbsensi
+            .filter(item => {
+              const tglStr = item.tanggal ? String(item.tanggal).split('T')[0].split(' ')[0] : '';
+              return tglStr === targetDate;
+            })
+            .map(item => String(item.nip || item.nik || '').trim())
+        );
+
+        let belumAbsenList = masterKaryawan.filter(k => {
+          const nipVal = String(k.nip || k.nik || '').trim();
+          const namaVal = (k.nama || '').toLowerCase();
+          const deptVal = k.dept || k.departemen || '';
+          const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+          const matchSearch = namaVal.includes(searchKeyword) || nipVal.toLowerCase().includes(searchKeyword);
+          return !sudahAbsenNips.has(nipVal) && matchDept && matchSearch;
+        });
+
+        if (belumAbsenList.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-success fw-semibold py-5"><i class="fa-solid fa-circle-check fs-3 mb-2 d-block"></i>Seluruh karyawan telah tercatat hadir/izin pada tanggal ${formatTanggalDisplay(targetDate)}.</td></tr>`;
+          return;
+        }
+
+        belumAbsenList.forEach(k => {
+          const nip = k.nip || k.nik || '-';
+          const initial = k.nama ? k.nama.charAt(0).toUpperCase() : 'K';
+          tbody.innerHTML += `
+            <tr>
+              <td class="text-nowrap"><i class="fa-regular fa-calendar me-1 text-muted"></i> <span class="fw-semibold">${formatTanggalDisplay(targetDate)}</span></td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span class="avatar-circle">${initial}</span>
+                  <div>
+                    <div class="fw-semibold text-dark">${k.nama}</div>
+                    <div class="text-muted" style="font-size: 11px;">NIP: ${nip}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-dept">${k.dept || k.departemen || 'Produksi Pabrik'}</span></td>
+              <td><span class="text-muted small">- / -</span></td>
+              <td><span class="text-muted small">Belum Ada Swafoto</span></td>
+              <td><span class="text-muted small">Belum Ada Titik GPS</span></td>
+              <td><span class="pill-status alpa"><i class="fa-regular fa-clock me-1"></i>BELUM ABSEN</span></td>
+              <td class="text-end">
+                <button class="btn btn-outline-warning btn-sm fw-semibold px-2.5" onclick="bukaModalCatatIzinCepat('${nip}', '${targetDate}')" title="Catat Izin/Sakit untuk Karyawan Ini">
+                  <i class="fa-solid fa-notes-medical me-1"></i> Catat Izin
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+        return;
+      }
+
+      let filtered = rekapAbsensi.filter(item => {
+        const nipVal = (item.nip || item.nik || '').toLowerCase();
+        const namaVal = (item.nama || '').toLowerCase();
+        const deptVal = item.dept || item.departemen || '';
+
+        let tglStr = '';
+        if (item.tanggal) {
+          tglStr = String(item.tanggal).split('T')[0].split(' ')[0];
+        }
+
+        const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+        const matchTanggal = tampilkanSatuBulan
+          ? tglStr.startsWith(bulanSelected)
+          : (window.currentTanggalFilter ? tglStr === window.currentTanggalFilter : true);
+        const matchSearch = namaVal.includes(searchKeyword) || nipVal.includes(searchKeyword);
+        return matchDept && matchTanggal && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        const infoPeriode = tampilkanSatuBulan ? `periode bulan ${bulanSelected}` : `tanggal ${formatTanggalDisplay(window.currentTanggalFilter)}`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-5"><i class="fa-solid fa-map-location-dot fs-3 mb-2 d-block opacity-50"></i>Belum ada data presensi harian untuk ${infoPeriode}.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(a => {
+        const nip = a.nip || a.nik || '-';
+        const initial = a.nama ? a.nama.charAt(0).toUpperCase() : 'K';
+
+        let pillClass = 'hadir';
+        const upperStatus = (a.status || 'HADIR').toUpperCase();
+        if (['SAKIT', 'IZIN', 'CUTI'].includes(upperStatus)) {
+          pillClass = 'izin';
+        } else if (upperStatus === 'TERLAMBAT') {
+          pillClass = 'terlambat';
+        } else if (upperStatus === 'ALPA') {
+          pillClass = 'alpa';
+        } else if (upperStatus === 'LUPA PULANG') {
+          pillClass = 'lupa-pulang';
+        }
+
+        const jamMasuk = a.jam_masuk && a.jam_masuk !== '-' ? a.jam_masuk : '-';
+        const jamPulang = a.jam_pulang && a.jam_pulang !== '-' ? a.jam_pulang : '-';
+
+        // Siapkan URL Google Maps Realtime yang valid
+        const hasCoord = (a.latitude && a.longitude && Number(a.latitude) !== 0 && Number(a.longitude) !== 0);
+        const mapsUrlMasuk = (a.maps_url && a.maps_url !== '-')
+          ? a.maps_url
+          : (hasCoord ? `https://www.google.com/maps?q=${a.latitude},${a.longitude}` : '');
+        const mapsUrlPulang = (a.maps_url_pulang && a.maps_url_pulang !== '-') ? a.maps_url_pulang : '';
+
+        // Kolom Bukti Swafoto
+        let fotoBtns = [];
+        if (a.foto_masuk_url && a.foto_masuk_url !== '-') {
+          fotoBtns.push(`<button class="btn btn-sm btn-outline-success py-1 px-2.5 fw-semibold" onclick="showFotoModal('${a.foto_masuk_url}', '${a.nama}', '${nip}', 'Swafoto Presensi Masuk (${jamMasuk})', '${mapsUrlMasuk}')"><i class="fa-solid fa-camera me-1"></i>Masuk</button>`);
+        }
+        if (a.foto_pulang_url && a.foto_pulang_url !== '-') {
+          fotoBtns.push(`<button class="btn btn-sm btn-outline-primary py-1 px-2.5 fw-semibold" onclick="showFotoModal('${a.foto_pulang_url}', '${a.nama}', '${nip}', 'Swafoto Presensi Pulang (${jamPulang})', '${mapsUrlPulang || mapsUrlMasuk}')"><i class="fa-solid fa-camera me-1"></i>Pulang</button>`);
+        }
+        const fotoHtml = fotoBtns.length > 0
+          ? `<div class="d-flex flex-wrap gap-1">${fotoBtns.join('')}</div>`
+          : `<span class="text-muted small"><i class="fa-regular fa-image me-1"></i>Tanpa Swafoto</span>`;
+
+        // Kolom Lokasi GPS Realtime + Catatan Lokasi Karyawan
+        let gpsItems = [];
+        if (mapsUrlMasuk) {
+          const coordText = hasCoord ? `${Number(a.latitude).toFixed(5)}, ${Number(a.longitude).toFixed(5)}` : 'Titik GPS Masuk';
+          gpsItems.push(`
+            <div class="d-flex align-items-center gap-1">
+              <a href="${mapsUrlMasuk}" target="_blank" class="btn-gps" title="Buka Lokasi Absen Masuk di Google Maps">
+                <i class="fa-solid fa-location-dot text-danger"></i> Lokasi Masuk (${coordText})
+              </a>
+            </div>
+          `);
+        }
+        if (mapsUrlPulang) {
+          gpsItems.push(`
+            <div class="d-flex align-items-center gap-1 mt-1">
+              <a href="${mapsUrlPulang}" target="_blank" class="btn-gps pulang" title="Buka Lokasi Absen Pulang di Google Maps">
+                <i class="fa-solid fa-location-arrow"></i> Lokasi Pulang
+              </a>
+            </div>
+          `);
+        }
+        if (a.catatan && a.catatan !== '-') {
+          gpsItems.push(`
+            <div class="text-secondary mt-1" style="font-size: 11px;">
+              <i class="fa-regular fa-comment-dots me-1 text-success"></i>${a.catatan}
+            </div>
+          `);
+        }
+        const gpsHtml = gpsItems.length > 0
+          ? `<div class="d-flex flex-column">${gpsItems.join('')}</div>`
+          : `<span class="text-muted small">Tanpa Titik GPS</span>`;
+
+        const tglClean = formatTanggalDisplay(a.tanggal);
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="text-nowrap"><i class="fa-regular fa-calendar me-1 text-muted"></i> <span class="fw-semibold">${tglClean}</span></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar-circle">${initial}</span>
+                <div>
+                  <div class="fw-semibold text-dark">${a.nama}</div>
+                  <div class="text-muted" style="font-size: 11px;">NIP: ${nip}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-dept">${a.dept || a.departemen || 'Produksi Pabrik'}</span></td>
+            <td class="text-nowrap">
+              <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 me-1"><i class="fa-solid fa-arrow-right-to-bracket me-1"></i>${jamMasuk}</span>
+              <span class="badge bg-secondary-subtle text-secondary border px-2 py-1"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>${jamPulang}</span>
+            </td>
+            <td>${fotoHtml}</td>
+            <td>${gpsHtml}</td>
+            <td><span class="pill-status ${pillClass}">${upperStatus.replace('_', ' ')}</span></td>
+            <td class="text-end text-nowrap">
+              <button class="btn btn-outline-secondary btn-sm px-2.5" onclick="openEditAbsensiModal(${a.id})" title="Koreksi Jam / Status Presensi">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm px-2.5 ms-1" onclick="hapusPresensi(${a.id}, '${a.nama}', '${tglClean}')" title="Hapus Data Presensi Ini">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+  }
+
+  function openEditKaryawanModal(nip) {
+    const k = masterKaryawan.find(item => (item.nip || item.nik) === nip);
+    if (!k) return;
+    document.getElementById('editNip').value = nip;
+    document.getElementById('editNama').value = k.nama || '';
+    document.getElementById('editJk').value = (k.jk === 'P' || k.jenis_kelamin === 'P' || k.jenis_kelamin === 'Perempuan') ? 'P' : 'L';
+    document.getElementById('editDept').value = k.dept || k.departemen || 'Produksi Pabrik';
+    const tmp = (k.tempat_lahir && k.tempat_lahir !== '-') ? k.tempat_lahir : '';
+    const tgl = (k.tanggal_lahir && k.tanggal_lahir !== '-') ? k.tanggal_lahir : '';
+    document.getElementById('editTtl').value = k.ttl && k.ttl !== '-' ? k.ttl : ((tmp || tgl) ? `${tmp}${tmp && tgl ? ', ' : ''}${tgl}` : '');
+    document.getElementById('editAlamat').value = (k.alamat && k.alamat !== '-') ? k.alamat : '';
+
+    const modalEl = document.getElementById('modalEditKaryawan');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modalInstance.show();
+  }
+
+  async function simpanEditKaryawan(e) {
+    e.preventDefault();
+    const nip = document.getElementById('editNip').value.trim();
+    const nama = document.getElementById('editNama').value.trim();
+    const jk = document.getElementById('editJk').value;
+    const dept = document.getElementById('editDept').value;
+    const ttl = document.getElementById('editTtl').value.trim();
+    const alamat = document.getElementById('editAlamat').value.trim() || '-';
+
+    let tempatLahir = '-';
+    let tanggalLahir = '-';
+    if (ttl && ttl !== '-') {
+      if (ttl.includes(',')) {
+        const parts = ttl.split(',');
+        tempatLahir = parts[0].trim() || '-';
+        tanggalLahir = parts.slice(1).join(',').trim() || '-';
+      } else if (ttl.includes('-')) {
+        const parts = ttl.split('-');
+        tempatLahir = parts[0].trim() || '-';
+        tanggalLahir = parts.slice(1).join('-').trim() || '-';
+      } else {
+        tempatLahir = ttl.trim();
+      }
+    }
+
+    try {
+      const res = await fetch(`/api/admin/karyawan/${encodeURIComponent(nip)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nama: nama,
+          jenis_kelamin: jk,
+          departemen: dept,
+          tempat_lahir: tempatLahir,
+          tanggal_lahir: tanggalLahir,
+          ttl: ttl,
+          alamat: alamat
+        })
+      });
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        const modalEl = document.getElementById('modalEditKaryawan');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        showToast(json.message || 'Data karyawan berhasil diperbarui.');
+        initData();
+      } else {
+        showToast(json.message || 'Gagal memperbarui data karyawan.', 'error');
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan koneksi ke server.', 'error');
+    }
+  }
+
+  function openEditAbsensiModal(id) {
+    const a = rekapAbsensi.find(item => Number(item.id) === Number(id));
+    if (!a) return;
+    document.getElementById('editAbsenId').value = a.id;
+    document.getElementById('editAbsenSubtitle').innerText = `${a.nama} (NIP: ${a.nip || '-'}) • Tanggal: ${formatTanggalDisplay(a.tanggal)}`;
+    document.getElementById('editAbsenMasuk').value = a.jam_masuk || '-';
+    document.getElementById('editAbsenPulang').value = a.jam_pulang || '-';
+    const st = (a.status || 'TEPAT_WAKTU').toUpperCase();
+    document.getElementById('editAbsenStatus').value = st === 'HADIR' ? 'TEPAT_WAKTU' : st;
+
+    const modalEl = document.getElementById('modalEditAbsensi');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modalInstance.show();
+  }
+
+  async function simpanEditAbsensi(e) {
+    e.preventDefault();
+    const id = document.getElementById('editAbsenId').value;
+    const jamMasuk = document.getElementById('editAbsenMasuk').value.trim() || '-';
+    const jamPulang = document.getElementById('editAbsenPulang').value.trim() || '-';
+    const status = document.getElementById('editAbsenStatus').value;
+
+    try {
+      const res = await fetch(`/api/admin/absensi/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jam_masuk: jamMasuk,
+          jam_pulang: jamPulang,
+          status: status
+        })
+      });
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        const modalEl = document.getElementById('modalEditAbsensi');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        showToast(json.message || 'Koreksi presensi berhasil disimpan.');
+        initData();
+      } else {
+        showToast(json.message || 'Gagal menyimpan koreksi presensi.', 'error');
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan koneksi ke server.', 'error');
+    }
+  }
+
+  function formatTanggalDisplay(tglRaw) {
+    if (!tglRaw) return '-';
+    const str = String(tglRaw);
+    const cleanDate = str.split('T')[0].split(' ')[0];
+    const parts = cleanDate.split('-');
+    if (parts.length === 3) {
+      const [y, m, d] = parts;
+      return `${d}/${m}/${y}`;
+    }
+    return cleanDate;
+  }
+
+  function showFotoModal(fotoUrl, nama, nip, judul, mapsUrl) {
+    document.getElementById('modalFotoTitle').innerText = judul;
+    document.getElementById('modalFotoSubtitle').innerText = `${nama} (NIP: ${nip})`;
+    document.getElementById('modalFotoImg').src = fotoUrl;
+
+    const mapsWrap = document.getElementById('modalFotoMapsWrap');
+    const mapsLink = document.getElementById('modalFotoMapsLink');
+    if (mapsUrl && mapsUrl !== '-') {
+      mapsLink.href = mapsUrl;
+      mapsWrap.classList.remove('d-none');
+    } else {
+      mapsWrap.classList.add('d-none');
+    }
+
+    const modalEl = document.getElementById('modalFotoSelfie');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modalInstance.show();
+  }
+
+  function viewUserLog(nip) {
+    document.getElementById('searchKeyword').value = nip;
+    setModeLog('BULAN');
+    switchTab('log_harian');
+  }
+
+  function bukaModalCatatIzinCepat(nip, tanggal) {
+    document.getElementById('izinKaryawanSelect').value = nip;
+    if (tanggal) document.getElementById('izinTanggalInput').value = tanggal;
+    const modalEl = document.getElementById('modalInputIzin');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modalInstance.show();
+  }
+
+  function updateStatusIzin(id, statusBaru) {
+    const isApprove = statusBaru.toLowerCase().startsWith('disetujui');
+    showConfirmModal({
+      title: isApprove ? 'Setujui Permohonan Izin?' : 'Tolak Permohonan Izin?',
+      message: isApprove
+        ? 'Permohonan izin karyawan ini akan disetujui dan otomatis tercatat pada rekap kehadiran.'
+        : 'Permohonan izin karyawan ini akan ditandai sebagai Ditolak.',
+      confirmText: isApprove ? 'Ya, Setujui' : 'Ya, Tolak',
+      variant: isApprove ? 'success' : 'danger',
+      icon: isApprove ? 'fa-check' : 'fa-xmark',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/izin/${id}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: statusBaru })
+          });
+          const json = await res.json();
+          if (res.ok && json.status === 'success') {
+            showToast(json.message || `Permohonan izin berhasil ${statusBaru.toLowerCase()}.`);
+            initData();
+          } else {
+            showToast(json.message || 'Gagal memperbarui status izin.', 'error');
+          }
+        } catch (e) {
+          showToast('Terjadi kesalahan koneksi ke server.', 'error');
+        }
+      }
+    });
+  }
+
+  function hapusIzin(id, nama) {
+    showConfirmModal({
+      title: 'Hapus Data Izin?',
+      message: `Permohonan izin karyawan "${nama}" akan dihapus secara permanen dari sistem.`,
+      confirmText: 'Ya, Hapus',
+      variant: 'danger',
+      icon: 'fa-trash-can',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/izin/${id}`, { method: 'DELETE' });
+          const json = await res.json();
+          if (res.ok && json.status === 'success') {
+            showToast(json.message || 'Data izin berhasil dihapus.');
+            initData();
+          } else {
+            showToast(json.message || 'Gagal menghapus data izin.', 'error');
+          }
+        } catch (e) {
+          showToast('Terjadi kesalahan koneksi ke server.', 'error');
+        }
+      }
+    });
+  }
+
+  function hapusPresensi(id, nama, tgl) {
+    showConfirmModal({
+      title: 'Hapus Data Presensi?',
+      message: `Catatan presensi untuk "${nama}" pada tanggal ${tgl} akan dihapus secara permanen dari sistem.`,
+      confirmText: 'Ya, Hapus Presensi',
+      variant: 'danger',
+      icon: 'fa-trash-can',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/absensi/${id}`, { method: 'DELETE' });
+          const json = await res.json();
+          if (res.ok && json.status === 'success') {
+            showToast(json.message || 'Data presensi berhasil dihapus.');
+            initData();
+          } else {
+            showToast(json.message || 'Gagal menghapus data presensi.', 'error');
+          }
+        } catch (e) {
+          showToast('Terjadi kesalahan koneksi ke server.', 'error');
+        }
+      }
+    });
+  }
+
+  // Helper Geolocation & Koordinat Kantor
+  function autoParseCoordinates(inputVal) {
+    if (!inputVal) return;
+    const str = inputVal.trim();
+    // Regex deteksi pola koordinat: lat, lng (misal -7.58854000, 110.79566000 atau dalam link Google Maps)
+    const regex = /([+-]?\d+(?:\.\d+)?)\s*[,/ ]\s*([+-]?\d+(?:\.\d+)?)/;
+    const match = str.match(regex);
+
+    const fb = document.getElementById('quickPasteFeedback');
+    if (match) {
+      const lat = parseFloat(match[1]);
+      const lng = parseFloat(match[2]);
+
+      // Validasi range latitude (-90 s/d 90) dan longitude (-180 s/d 180)
+      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        document.getElementById('cfgLokasiLat').value = lat.toFixed(8);
+        document.getElementById('cfgLokasiLng').value = lng.toFixed(8);
+
+        if (fb) {
+          fb.style.display = 'block';
+          fb.className = 'small text-success mt-1 fw-bold';
+          fb.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Koordinat berhasil diparsing: Latitude <code>${lat.toFixed(8)}</code>, Longitude <code>${lng.toFixed(8)}</code>`;
+        }
+        return true;
+      }
+    }
+
+    if (fb && str.length > 5) {
+      fb.style.display = 'block';
+      fb.className = 'small text-danger mt-1 fw-bold';
+      fb.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-1"></i> Format koordinat tidak dikenali. Masukkan contoh: <code>-7.58854, 110.79566</code>`;
+    }
+    return false;
+  }
+
+  async function tempelDariClipboard() {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        document.getElementById('cfgQuickPaste').focus();
+        showToast('Tekan tombol Ctrl+V di kotak teks untuk menempel.', 'info');
+        return;
+      }
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        document.getElementById('cfgQuickPaste').value = text;
+        const ok = autoParseCoordinates(text);
+        if (ok) showToast('Koordinat berhasil ditempel dan diekstrak!');
+        else showToast('Teks ditempel. Periksa format koordinat.', 'warning');
+      } else {
+        showToast('Clipboard masih kosong.', 'info');
+      }
+    } catch (err) {
+      document.getElementById('cfgQuickPaste').focus();
+      showToast('Gunakan shortcut Ctrl+V untuk menempel di kotak teks.', 'info');
+    }
+  }
+
+  function deteksiGpsBrowser() {
+    const btn = document.getElementById('btnDeteksiGpsPc');
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (!navigator.geolocation) {
+      showToast('Browser Anda tidak mendukung deteksi lokasi GPS.', 'warning');
+      return;
+    }
+    if (btn) {
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Mendeteksi GPS...';
+      btn.disabled = true;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        if (btn) {
+          btn.innerHTML = oldHtml;
+          btn.disabled = false;
+        }
+        const lat = pos.coords.latitude.toFixed(8);
+        const lng = pos.coords.longitude.toFixed(8);
+        const acc = Math.round(pos.coords.accuracy || 0);
+
+        document.getElementById('cfgLokasiLat').value = lat;
+        document.getElementById('cfgLokasiLng').value = lng;
+        showToast(`GPS PC/Browser berhasil terdeteksi: ${lat}, ${lng} (Akurasi: ~${acc}m)`);
+
+        const fb = document.getElementById('quickPasteFeedback');
+        if (fb) {
+          fb.style.display = 'block';
+          fb.className = 'small text-success mt-1 fw-bold';
+          fb.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Lokasi GPS PC Terdeteksi: <code>${lat}, ${lng}</code> (Akurasi: &plusmn;${acc}m)`;
+        }
+      },
+      (err) => {
+        if (btn) {
+          btn.innerHTML = oldHtml;
+          btn.disabled = false;
+        }
+        let msg = 'Gagal mendeteksi lokasi dari browser/PC.';
+        if (err.code === 1) msg = 'Izin lokasi ditolak browser. Izinkan akses lokasi di icon gembok bilah URL.';
+        else if (err.code === 2) msg = 'Posisi tidak tersedia di PC ini. Gunakan opsi salin koordinat dari HP.';
+        else if (err.code === 3) msg = 'Waktu deteksi GPS habis (timeout). Coba lagi atau gunakan salin dari HP.';
+        showToast(msg, 'warning');
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+    );
+  }
+
+  function gunakanTitikAbsenTerakhir() {
+    if (!rekapAbsensi || rekapAbsensi.length === 0) {
+      showToast('Belum ada data presensi karyawan untuk disalin.', 'warning');
+      return;
+    }
+    const found = rekapAbsensi.find(a => {
+      const lat = parseFloat(a.latitude);
+      const lng = parseFloat(a.longitude);
+      return !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0);
+    });
+
+    if (found) {
+      const lat = parseFloat(found.latitude).toFixed(8);
+      const lng = parseFloat(found.longitude).toFixed(8);
+      document.getElementById('cfgLokasiLat').value = lat;
+      document.getElementById('cfgLokasiLng').value = lng;
+      showToast(`Koordinat disalin dari presensi ${found.nama || found.nip} (${lat}, ${lng})`);
+
+      const fb = document.getElementById('quickPasteFeedback');
+      if (fb) {
+        fb.style.display = 'block';
+        fb.className = 'small text-success mt-1 fw-bold';
+        fb.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Titik koordinat disalin dari presensi <strong>${found.nama || found.nip}</strong>: <code>${lat}, ${lng}</code>`;
+      }
+    } else {
+      showToast('Tidak ada data presensi dengan koordinat GPS valid.', 'warning');
+    }
+  }
+
+  function bukaMapsKantor() {
+    const lat = document.getElementById('cfgLokasiLat').value;
+    const lng = document.getElementById('cfgLokasiLng').value;
+    if (!lat || !lng) {
+      showToast('Isi koordinat Latitude dan Longitude terlebih dahulu.', 'warning');
+      return;
+    }
+    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+  }
+
+  function updateLabelRadius(val) {
+    const v = parseInt(val) || 100;
+    const el = document.getElementById('labelRadiusTerpilih');
+    if (el) el.innerText = `${v} Meter`;
+  }
+
+  function setRadiusPreset(val) {
+    document.getElementById('cfgRadiusMeter').value = val;
+    updateLabelRadius(val);
+  }
+
+  async function simpanConfigKantor(e) {
+    e.preventDefault();
+    const jamMasuk = document.getElementById('cfgJamMasuk').value;
+    const batasTerlambat = document.getElementById('cfgBatasTerlambat').value;
+    const jamPulang = document.getElementById('cfgJamPulang').value;
+    const pengumuman = document.getElementById('cfgPengumuman').value.trim();
+
+    const lokasiNama = document.getElementById('cfgLokasiNama').value.trim();
+    const lokasiLat = parseFloat(document.getElementById('cfgLokasiLat').value);
+    const lokasiLng = parseFloat(document.getElementById('cfgLokasiLng').value);
+    const radiusMeter = parseInt(document.getElementById('cfgRadiusMeter').value);
+    const wajibRadius = document.getElementById('cfgWajibRadius').checked ? 1 : 0;
+
+    if (isNaN(lokasiLat) || isNaN(lokasiLng)) {
+      showToast('Harap masukkan koordinat Latitude dan Longitude yang valid.', 'error');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jam_masuk: jamMasuk,
+          batas_terlambat: batasTerlambat,
+          jam_pulang: jamPulang,
+          pengumuman: pengumuman,
+          lokasi_nama: lokasiNama,
+          lokasi_latitude: lokasiLat,
+          lokasi_longitude: lokasiLng,
+          radius_meter: radiusMeter,
+          wajib_dalam_radius: wajibRadius
+        })
+      });
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        const modalEl = document.getElementById('modalPengaturanJam');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        showToast('Pengaturan jam kerja, titik lokasi, dan geofence kantor berhasil disimpan.');
+        initData();
+      } else {
+        showToast(json.message || 'Gagal menyimpan pengaturan.', 'error');
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan koneksi ke server.', 'error');
+    }
+  }
+
+  async function submitIzinAdmin(e) {
+    e.preventDefault();
+    const nip = document.getElementById('izinKaryawanSelect').value;
+    const jenis = document.getElementById('izinJenisSelect').value;
+    const tanggal = document.getElementById('izinTanggalInput').value;
+    const alasan = document.getElementById('izinAlasanInput').value.trim();
+
+    if (!nip) {
+      showToast('Pilih karyawan terlebih dahulu.', 'warning');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/izin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nip: nip,
+          jenis_izin: jenis,
+          tanggal: tanggal,
+          alasan: alasan
+        })
+      });
+
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        initData();
+        const modalEl = document.getElementById('modalInputIzin');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        document.getElementById('formIzinAdmin').reset();
+        document.getElementById('izinTanggalInput').value = defaultTanggal;
+        showToast(json.message || 'Status izin karyawan berhasil disimpan.');
+      } else {
+        showToast(json.message || 'Gagal menyimpan izin.', 'error');
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan koneksi ke server.', 'error');
+    }
+  }
+
+  function hapusKaryawan(nip) {
+    showConfirmModal({
+      title: 'Hapus Data Karyawan?',
+      message: `Data karyawan dengan NIP ${nip} beserta riwayat presensinya akan dihapus secara permanen.`,
+      confirmText: 'Ya, Hapus',
+      variant: 'danger',
+      icon: 'fa-trash-can',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/karyawan/${nip}`, { method: 'DELETE' });
+          const json = await res.json();
+          if (res.ok && json.status === 'success') {
+            showToast(json.message || `Karyawan NIP ${nip} berhasil dihapus.`);
+            initData();
+          } else {
+            showToast(json.message || 'Gagal menghapus karyawan.', 'error');
+          }
+        } catch (e) {
+          showToast('Terjadi kesalahan koneksi ke server.', 'error');
+        }
+      }
+    });
+  }
+
+  function resetHp(nip, nama) {
+    showConfirmModal({
+      title: 'Reset Tautan Perangkat HP?',
+      message: `Lepas pengikatan perangkat smartphone untuk ${nama} (NIP: ${nip}) agar dapat login di HP baru?`,
+      confirmText: 'Ya, Reset HP',
+      variant: 'warning',
+      icon: 'fa-mobile-screen-button',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/karyawan/${nip}/reset-device`, { method: 'PUT' });
+          const json = await res.json();
+          if (res.ok && json.status === 'success') {
+            showToast(`Tautan perangkat untuk ${nama} (${nip}) berhasil direset.`);
+            initData();
+          } else {
+            showToast(json.message || 'Gagal mereset perangkat.', 'error');
+          }
+        } catch (e) {
+          showToast('Terjadi kesalahan koneksi ke server.', 'error');
+        }
+      }
+    });
+  }
+
+  async function tambahKaryawan(e) {
+    e.preventDefault();
+    const nip = document.getElementById('addNip').value.trim();
+    const nama = document.getElementById('addNama').value.trim();
+    const jk = document.getElementById('addJk').value;
+    const ttl = document.getElementById('addTtl').value.trim();
+    const alamat = document.getElementById('addAlamat') ? document.getElementById('addAlamat').value.trim() : '-';
+    const dept = document.getElementById('addDept').value;
+
+    let tempatLahir = '-';
+    let tanggalLahir = '-';
+    if (ttl && ttl !== '-') {
+      if (ttl.includes(',')) {
+        const parts = ttl.split(',');
+        tempatLahir = parts[0].trim() || '-';
+        tanggalLahir = parts.slice(1).join(',').trim() || '-';
+      } else if (ttl.includes('-')) {
+        const parts = ttl.split('-');
+        tempatLahir = parts[0].trim() || '-';
+        tanggalLahir = parts.slice(1).join('-').trim() || '-';
+      } else {
+        tempatLahir = ttl.trim();
+      }
+    }
+
+    try {
+      const res = await fetch('/api/admin/karyawan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nik: nip,
+          nama: nama,
+          jenis_kelamin: jk,
+          tempat_lahir: tempatLahir,
+          tanggal_lahir: tanggalLahir,
+          ttl: ttl,
+          alamat: alamat,
+          jabatan: dept,
+          device_id: '-'
+        })
+      });
+
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        initData();
+        const modalEl = document.getElementById('modalTambahKaryawan');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+        document.getElementById('formTambah').reset();
+        showToast(json.message || 'Karyawan baru berhasil ditambahkan.');
+      } else {
+        showToast(json.message || 'Gagal menambahkan karyawan.', 'error');
+      }
+    } catch (e) {
+      showToast('Terjadi kesalahan koneksi ke server.', 'error');
+    }
+  }
+
+  function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+      input.type = 'text';
+      if (icon) {
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      }
+    } else {
+      input.type = 'password';
+      if (icon) {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+  }
+
+  async function ubahPasswordAdmin(e) {
+    e.preventDefault();
+    const oldPass = document.getElementById('oldAdminPass').value.trim();
+    const newPass = document.getElementById('newAdminPass').value.trim();
+    const submitBtn = document.getElementById('btnSimpanPasswordAdmin');
+
+    if (!oldPass) {
+      showToast('Masukkan kata sandi lama saat ini.', 'warning');
+      return;
+    }
+
+    if (!newPass || newPass.length < 5) {
+      showToast('Kata sandi baru minimal 5 karakter.', 'warning');
+      return;
+    }
+
+    if (oldPass === newPass) {
+      showToast('Kata sandi baru tidak boleh sama dengan kata sandi lama.', 'warning');
+      return;
+    }
+
+    const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Menyimpan...';
+    }
+
+    try {
+      const res = await fetch('/api/admin/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password_lama: oldPass,
+          password_baru: newPass
+        })
+      });
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        document.getElementById('formUbahPasswordAdmin').reset();
+        showToast(json.message || 'Kata sandi admin berhasil diperbarui dan tersimpan ke database.', 'success');
+      } else {
+        showToast(json.message || 'Gagal mengubah kata sandi admin.', 'error');
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan koneksi ke server.', 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHtml;
+      }
+    }
+  }
+
+  function logoutAdmin() {
+    showConfirmModal({
+      title: 'Keluar dari Portal Admin?',
+      message: 'Sesi Anda akan diakhiri dan Anda perlu login kembali untuk mengakses dashboard.',
+      confirmText: 'Ya, Keluar',
+      variant: 'danger',
+      icon: 'fa-right-from-bracket',
+      onConfirm: async () => {
+        try {
+          await fetch('/api/admin/logout', { method: 'POST' });
+        } catch (e) {}
+        window.location.href = '/login.html';
+      }
+    });
+  }
+
+  function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', 'a4');
+    const deptFilter = document.getElementById('filterDept').value;
+    const bulanFilter = getBulanSelected();
+
+    doc.setFontSize(15);
+    doc.text(`LAPORAN PRESENSI & HRIS - PT. FADIYA KENCANA`, 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Kategori Laporan : ${document.getElementById('pageTitle').innerText}`, 14, 22);
+    doc.text(`Departemen       : ${deptFilter} | Periode: ${bulanFilter}`, 14, 27);
+    doc.text(`Dicetak Pada     : ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}`, 14, 32);
+
+    doc.autoTable({
+      html: '#dataTable',
+      startY: 38,
+      theme: 'grid',
+      headStyles: { fillColor: [0, 105, 92] },
+      styles: { fontSize: 9 }
+    });
+
+    doc.save(`Laporan_${currentTab}_${bulanFilter}.pdf`);
+  }
+
+  function downloadCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    if (currentTab === 'karyawan') {
+      csvContent += "NIP,Nama,L/P,Tempat Tgl Lahir,Alamat,Departemen,Status HP\n";
+      masterKaryawan.forEach(k => {
+        const tmp = (k.tempat_lahir && k.tempat_lahir !== '-') ? k.tempat_lahir : '';
+        const tgl = (k.tanggal_lahir && k.tanggal_lahir !== '-') ? k.tanggal_lahir : '';
+        const ttlDisplay = k.ttl && k.ttl !== '-' ? k.ttl : ((tmp || tgl) ? `${tmp}${tmp && tgl ? ', ' : ''}${tgl}` : '-');
+        const hpStatus = (k.device_id && k.device_id !== '-') ? 'Tertaut' : 'Belum Tertaut';
+        csvContent += `"${k.nip || k.nik}","${k.nama}","${k.jk || 'L'}","${ttlDisplay}","${k.alamat || '-'}","${k.dept || k.departemen}","${hpStatus}"\n`;
+      });
+    } else if (currentTab === 'rekap_bulanan') {
+      csvContent += "NIP,Nama Karyawan,Departemen,Periode Bulan,Total Hadir,Total Izin/Sakit,Total Terlambat\n";
+      masterKaryawan.forEach(k => {
+        const b = getBulanSelected();
+        csvContent += `"${k.nip || k.nik}","${k.nama}","${k.dept || k.departemen}","${b}","${k.total_hadir_bulan_ini || 0}","${k.total_izin_bulan_ini || 0}","${k.total_terlambat_bulan_ini || 0}"\n`;
+      });
+    } else if (currentTab === 'pengajuan_izin') {
+      csvContent += "Tanggal Pengajuan,NIP,Nama,Departemen,Jenis Izin,Tanggal Mulai,Tanggal Selesai,Alasan,Status\n";
+      daftarPengajuanIzin.forEach(i => {
+        csvContent += `"${formatTanggalDisplay(i.created_at)}","${i.nip}","${i.nama}","${i.departemen}","${i.jenis_izin}","${formatTanggalDisplay(i.tanggal_mulai)}","${formatTanggalDisplay(i.tanggal_selesai)}","${i.alasan}","${i.status}"\n`;
+      });
+    } else {
+      csvContent += "Tanggal,NIP,Nama,Departemen,Jam Masuk,Jam Pulang,Koordinat GPS,Link Google Maps,Status\n";
+      rekapAbsensi.forEach(a => {
+        const coord = (a.latitude && a.longitude) ? `${a.latitude}, ${a.longitude}` : '-';
+        csvContent += `"${a.tanggal}","${a.nip || a.nik}","${a.nama}","${a.dept || a.departemen}","${a.jam_masuk || '-'}","${a.jam_pulang || '-'}","${coord}","${a.maps_url || '-'}","${a.status}"\n`;
+      });
+    }
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Laporan_${currentTab}_${getBulanSelected()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // ==========================================
+  // FITUR REKAP PAYROLL & EVALUASI GAJI (EXCEL & PDF)
+  // ==========================================
+  let cachedPayrollResult = null;
+
+  function bukaModalPayroll() {
+    const filterBulanEl = document.getElementById('filterBulan');
+    let currentBulanVal = '';
+    if (filterBulanEl && filterBulanEl.value) {
+      currentBulanVal = filterBulanEl.value.substring(0, 7);
+    } else {
+      currentBulanVal = new Date().toISOString().substring(0, 7);
+    }
+    const modalBulanInput = document.getElementById('payrollBulan');
+    if (modalBulanInput) modalBulanInput.value = currentBulanVal;
+
+    const deptFilterEl = document.getElementById('filterDept');
+    const modalDeptSelect = document.getElementById('payrollDept');
+    if (deptFilterEl && modalDeptSelect) {
+      modalDeptSelect.value = deptFilterEl.value || 'SEMUA';
+    }
+
+    const modalEl = document.getElementById('modalRekapPayroll');
+    if (modalEl) {
+      const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modalInstance.show();
+    }
+    muatDataPayroll();
+  }
+
+  async function muatDataPayroll() {
+    const bulan = document.getElementById('payrollBulan')?.value || new Date().toISOString().substring(0, 7);
+    const dept = document.getElementById('payrollDept')?.value || 'SEMUA';
+    const hariKerja = parseInt(document.getElementById('payrollHariKerja')?.value) || 22;
+
+    const tbody = document.getElementById('payrollTableBody');
+    const tfoot = document.getElementById('payrollTableFoot');
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="14" class="text-center py-4 text-white-50"><i class="fa-solid fa-spinner fa-spin me-2" style="color: #10b981;"></i>Memuat dan menghitung rekapitulasi presensi &amp; kedisiplinan...</td></tr>`;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/rekap-payroll?bulan=${bulan}&dept=${encodeURIComponent(dept)}&hari_kerja=${hariKerja}`);
+      const json = await res.json();
+      if (!res.ok || json.status !== 'success') {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="14" class="text-center text-danger py-4">${json.message || 'Gagal mengambil data payroll.'}</td></tr>`;
+        return;
+      }
+
+      cachedPayrollResult = json;
+      const data = json.data || [];
+      const sum = json.summary || {};
+      const cfg = json.config || {};
+
+      // Update KPI Cards
+      const kpiKaryawan = document.getElementById('payrollKpiTotalKaryawan');
+      if (kpiKaryawan) kpiKaryawan.innerText = `${sum.total_karyawan || 0} Orang`;
+
+      const kpiHadir = document.getElementById('payrollKpiRataHadir');
+      if (kpiHadir) kpiHadir.innerText = `${sum.rata_kehadiran_persen || 0}%`;
+
+      const kpiTelat = document.getElementById('payrollKpiTotalTerlambat');
+      if (kpiTelat) kpiTelat.innerText = `${sum.total_terlambat_kumulatif || 0}x (${sum.total_menit_terlambat_kumulatif || 0} mnt)`;
+
+      const kpiIzin = document.getElementById('payrollKpiTotalIzin');
+      if (kpiIzin) kpiIzin.innerText = `${sum.total_izin_kumulatif || 0} Hari`;
+
+      const infoBatas = document.getElementById('payrollInfoBatasTerlambat');
+      if (infoBatas) infoBatas.innerText = cfg.batas_terlambat || '08:15';
+
+      if (data.length === 0) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="13" class="text-center text-muted py-5">Tidak ada karyawan yang terdaftar pada departemen ini.</td></tr>`;
+        if (tfoot) tfoot.innerHTML = '';
+        return;
+      }
+
+      let rowsHtml = '';
+      data.forEach(r => {
+        let badgeClass = 'bg-success';
+        if (r.evaluasi_disiplin === 'Perlu Peringatan') badgeClass = 'bg-danger text-white';
+        else if (r.evaluasi_disiplin === 'Cukup') badgeClass = 'bg-warning text-dark';
+        else if (r.evaluasi_disiplin === 'Baik') badgeClass = 'bg-info text-dark';
+
+        rowsHtml += `
+          <tr style="border-bottom: 1px solid rgba(52, 211, 153, 0.15);">
+            <td class="text-center text-white-50">${r.no}</td>
+            <td class="fw-bold font-monospace" style="color: #34d399 !important;">${r.nip}</td>
+            <td class="fw-bold" style="color: #ffffff !important;">${r.nama}</td>
+            <td><span class="badge rounded-pill" style="background: rgba(16, 185, 129, 0.22) !important; color: #6ee7b7 !important; border: 1px solid rgba(52, 211, 153, 0.45) !important; font-weight: 600; font-size: 11px;">${r.departemen}</span></td>
+            <td class="text-center text-white-50 fw-semibold">${r.hari_kerja_efektif}</td>
+            <td class="text-center fw-bold" style="color: #34d399 !important;">${r.total_hadir}</td>
+            <td class="text-center text-white-50">${r.total_tepat_waktu}</td>
+            <td class="text-center ${r.total_terlambat > 0 ? 'fw-bold' : 'text-white-50'}" style="${r.total_terlambat > 0 ? 'color: #fb7185 !important;' : ''}">${r.total_terlambat}</td>
+            <td class="text-center ${r.total_menit_terlambat > 0 ? 'fw-bold' : 'text-white-50'}" style="${r.total_menit_terlambat > 0 ? 'color: #fb7185 !important;' : ''}">${r.total_menit_terlambat > 0 ? r.total_menit_terlambat + ' mnt' : '-'}</td>
+            <td class="text-center ${r.total_izin > 0 ? 'fw-bold' : 'text-white-50'}" style="color: #fbbf24 !important;">${r.total_izin}</td>
+            <td class="text-center ${r.total_alpa > 0 ? 'fw-bold' : 'text-white-50'}" style="${r.total_alpa > 0 ? 'color: #fb7185 !important;' : ''}">${r.total_alpa}</td>
+            <td class="text-center fw-bold text-white">${r.persentase_kehadiran}</td>
+            <td class="text-center"><span class="badge ${badgeClass}" style="font-size: 11px; padding: 5px 10px; border-radius: 999px;">${r.evaluasi_disiplin}</span></td>
+          </tr>
+        `;
+      });
+      if (tbody) tbody.innerHTML = rowsHtml;
+
+      if (tfoot) {
+        tfoot.innerHTML = `
+          <tr style="background: #022018; border-top: 2px solid #10b981; color: #f8fafc;">
+            <td colspan="4" class="text-end fw-bold" style="color: #a7f3d0;">TOTAL / RATA-RATA KUMULATIF :</td>
+            <td class="text-center text-white-50">${hariKerja}</td>
+            <td class="text-center fw-bold" style="color: #34d399;">${sum.total_hadir_kumulatif || 0}</td>
+            <td class="text-center text-white-50">${(sum.total_hadir_kumulatif || 0) - (sum.total_terlambat_kumulatif || 0)}</td>
+            <td class="text-center text-danger fw-bold">${sum.total_terlambat_kumulatif || 0}</td>
+            <td class="text-center text-danger fw-bold">${sum.total_menit_terlambat_kumulatif || 0} mnt</td>
+            <td class="text-center fw-bold" style="color: #fbbf24;">${sum.total_izin_kumulatif || 0}</td>
+            <td class="text-center text-danger fw-bold">${sum.total_alpa_kumulatif || 0}</td>
+            <td class="text-center fw-bold" style="color: #34d399;">${sum.rata_kehadiran_persen || 0}%</td>
+            <td class="text-center text-white-50">-</td>
+          </tr>
+        `;
+      }
+    } catch (err) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="13" class="text-center text-danger py-4">Terjadi kesalahan koneksi server: ${err.message}</td></tr>`;
+    }
+  }
+
+  function exportPayrollExcel() {
+    if (!cachedPayrollResult || !cachedPayrollResult.data || cachedPayrollResult.data.length === 0) {
+      showToast('Tidak ada data rekap presensi untuk diekspor.', 'warning');
+      return;
+    }
+
+    const res = cachedPayrollResult;
+    const bulan = res.bulan || getBulanSelected();
+    const namaBulan = new Date(bulan + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    const dept = res.departemen_filter || 'Semua Departemen';
+    const hk = res.hari_kerja_efektif || 22;
+    const sum = res.summary || {};
+    const waktuCetak = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    let tableRows = '';
+    res.data.forEach(r => {
+      let evaluasiColor = '#15803d'; // green
+      if (r.evaluasi_disiplin === 'Perlu Peringatan') evaluasiColor = '#b91c1c';
+      else if (r.evaluasi_disiplin === 'Cukup') evaluasiColor = '#b45309';
+
+      tableRows += `
+        <tr>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px;">${r.no}</td>
+          <td style="mso-number-format:'\\@'; border: 1px solid #d1d5db; padding: 6px; font-weight: bold; color: #00695c;">&nbsp;${r.nip}</td>
+          <td style="border: 1px solid #d1d5db; padding: 6px; font-weight: bold;">${r.nama}</td>
+          <td style="border: 1px solid #d1d5db; padding: 6px;">${r.departemen}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px;">${r.hari_kerja_efektif}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px; font-weight: bold; color: #15803d;">${r.total_hadir}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px;">${r.total_tepat_waktu}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px; color: ${r.total_terlambat > 0 ? '#b91c1c' : '#333333'}; font-weight: ${r.total_terlambat > 0 ? 'bold' : 'normal'};">${r.total_terlambat}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px; color: ${r.total_menit_terlambat > 0 ? '#b91c1c' : '#333333'}; font-weight: ${r.total_menit_terlambat > 0 ? 'bold' : 'normal'};">${r.total_menit_terlambat}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px; color: ${r.total_izin > 0 ? '#b45309' : '#333333'};">${r.total_izin}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px; color: ${r.total_alpa > 0 ? '#dc2626' : '#333333'}; font-weight: ${r.total_alpa > 0 ? 'bold' : 'normal'};">${r.total_alpa}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px; font-weight: bold;">${r.persentase_kehadiran}</td>
+          <td style="text-align: center; border: 1px solid #d1d5db; padding: 6px; font-weight: bold; color: ${evaluasiColor};">${r.evaluasi_disiplin}</td>
+        </tr>
+      `;
+    });
+
+    const excelHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="utf-8">
+        <!--[if gte mso 9]>
+        <xml>
+          <x:ExcelWorkbook>
+            <x:ExcelWorksheets>
+              <x:ExcelWorksheet>
+                <x:Name>Rekap Presensi ${bulan}</x:Name>
+                <x:WorksheetOptions>
+                  <x:DisplayGridlines/>
+                </x:WorksheetOptions>
+              </x:ExcelWorksheet>
+            </x:ExcelWorksheets>
+          </x:ExcelWorkbook>
+        </xml>
+        <![endif]-->
+        <style>
+          body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 10pt; color: #1e293b; }
+          .kop-pt { font-size: 16pt; font-weight: bold; color: #00695c; }
+          .kop-sub { font-size: 11pt; font-weight: bold; color: #334155; }
+          .meta { font-size: 9.5pt; color: #475569; }
+          th { background-color: #00695c; color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #004d40; padding: 8px 6px; font-size: 10pt; }
+          .total-row { background-color: #f1f5f9; font-weight: bold; border-top: 2px solid #00695c; border-bottom: 2px solid #00695c; }
+          .ttd-box { font-size: 10pt; text-align: center; }
+        </style>
+      </head>
+      <body>
+        <table>
+          <tr>
+            <td colspan="13" class="kop-pt">PT FADIYA KENCANA</td>
+          </tr>
+          <tr>
+            <td colspan="13" class="kop-sub">LAPORAN REKAPITULASI PRESENSI &amp; EVALUASI KEDISIPLINAN KARYAWAN</td>
+          </tr>
+          <tr>
+            <td colspan="13" class="meta">Periode: <strong>${namaBulan}</strong> | Hari Kerja Efektif: <strong>${hk} Hari</strong> | Departemen: <strong>${dept}</strong></td>
+          </tr>
+          <tr>
+            <td colspan="13" class="meta">Dicetak Pada: ${waktuCetak} | Lokasi Kantor: ${res.config?.lokasi_nama || 'Kantor Pusat PT Fadiya Kencana'}</td>
+          </tr>
+          <tr><td colspan="13"></td></tr>
+          <thead>
+            <tr>
+              <th style="width: 35px;">NO</th>
+              <th style="width: 110px;">NIP / NIK</th>
+              <th style="width: 180px;">NAMA LENGKAP</th>
+              <th style="width: 160px;">DEPARTEMEN</th>
+              <th style="width: 70px;">HARI KERJA</th>
+              <th style="width: 70px;">HADIR (HARI)</th>
+              <th style="width: 70px;">TEPAT WAKTU</th>
+              <th style="width: 70px;">TERLAMBAT</th>
+              <th style="width: 90px;">TELAT (MENIT)</th>
+              <th style="width: 70px;">IZIN / SAKIT</th>
+              <th style="width: 70px;">ALPA</th>
+              <th style="width: 80px;">% HADIR</th>
+              <th style="width: 120px;">EVALUASI DISIPLIN</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+            <tr class="total-row">
+              <td colspan="4" style="text-align: right; padding: 8px; border: 1px solid #94a3b8;">TOTAL / RATA-RATA KUMULATIF :</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8;">${hk}</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8; color: #15803d;">${sum.total_hadir_kumulatif || 0}</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8;">${(sum.total_hadir_kumulatif || 0) - (sum.total_terlambat_kumulatif || 0)}</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8; color: #b91c1c;">${sum.total_terlambat_kumulatif || 0}</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8; color: #b91c1c;">${sum.total_menit_terlambat_kumulatif || 0} mnt</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8; color: #b45309;">${sum.total_izin_kumulatif || 0}</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8; color: #dc2626;">${sum.total_alpa_kumulatif || 0}</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8; color: #15803d;">${sum.rata_kehadiran_persen || 0}%</td>
+              <td style="text-align: center; padding: 8px; border: 1px solid #94a3b8;">-</td>
+            </tr>
+          </tbody>
+        </table>
+        <br><br>
+        <table>
+          <tr>
+            <td colspan="4" class="ttd-box">
+              Dibuat Oleh,<br><strong>HRD &amp; Personalia</strong><br><br><br><br>
+              <u>( .................................................... )</u>
+            </td>
+            <td colspan="5"></td>
+            <td colspan="4" class="ttd-box">
+              Mengetahui &amp; Menyetujui,<br><strong>Pimpinan / Direktur Perusahaan</strong><br><br><br><br>
+              <u>( .................................................... )</u>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Laporan_Rekap_Presensi_Kedisiplinan_PT_Fadiya_Kencana_${bulan}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Laporan Excel Rekap Presensi & Kedisiplinan berhasil diunduh!');
+  }
+
+  function exportPayrollPDF() {
+    if (!cachedPayrollResult || !cachedPayrollResult.data || cachedPayrollResult.data.length === 0) {
+      showToast('Tidak ada data rekap presensi untuk dicetak.', 'warning');
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', 'a4'); // Landscape A4 (297mm x 210mm)
+    const res = cachedPayrollResult;
+    const bulan = res.bulan || getBulanSelected();
+    const namaBulan = new Date(bulan + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    const dept = res.departemen_filter || 'Semua Departemen';
+    const hk = res.hari_kerja_efektif || 22;
+    const sum = res.summary || {};
+
+    // 1. KOP SURAT RESMI
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(0, 105, 92);
+    doc.text('PT FADIYA KENCANA', 14, 14);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    doc.text('SISTEM MANAJEMEN PRESENSI & HRIS PERUSAHAAN', 14, 19);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text('LAPORAN REKAPITULASI PRESENSI & EVALUASI KEDISIPLINAN', 14, 26);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(71, 85, 105);
+    doc.text(`Periode: ${namaBulan}  |  Hari Kerja Efektif: ${hk} Hari  |  Departemen: ${dept}`, 14, 31);
+    doc.text(`Dicetak Pada: ${new Date().toLocaleString('id-ID')}  |  Lokasi: ${res.config?.lokasi_nama || 'Kantor Pusat'}`, 14, 36);
+
+    // Garis Ganda Pembatas Kop Surat
+    doc.setDrawColor(0, 105, 92);
+    doc.setLineWidth(0.8);
+    doc.line(14, 39, 283, 39);
+    doc.setLineWidth(0.2);
+    doc.line(14, 40, 283, 40);
+
+    // 2. DATA TABLE MAPPING
+    const tableData = res.data.map(r => [
+      r.no,
+      r.nip,
+      r.nama,
+      r.departemen,
+      r.hari_kerja_efektif,
+      r.total_hadir,
+      r.total_tepat_waktu,
+      r.total_terlambat,
+      r.total_menit_terlambat > 0 ? `${r.total_menit_terlambat}m` : '0',
+      r.total_izin,
+      r.total_alpa,
+      r.persentase_kehadiran,
+      r.evaluasi_disiplin
+    ]);
+
+    const footData = [[
+      '',
+      '',
+      'TOTAL KUMULATIF :',
+      '',
+      hk,
+      sum.total_hadir_kumulatif || 0,
+      (sum.total_hadir_kumulatif || 0) - (sum.total_terlambat_kumulatif || 0),
+      sum.total_terlambat_kumulatif || 0,
+      `${sum.total_menit_terlambat_kumulatif || 0}m`,
+      sum.total_izin_kumulatif || 0,
+      sum.total_alpa_kumulatif || 0,
+      `${sum.rata_kehadiran_persen || 0}%`,
+      '-'
+    ]];
+
+    doc.autoTable({
+      head: [['No', 'NIP', 'Nama Karyawan', 'Departemen', 'HK', 'Hadir', 'Tepat', 'Telat', 'Menit', 'Izin', 'Alpa', '% Hadir', 'Status Disiplin']],
+      body: tableData,
+      foot: footData,
+      startY: 43,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [0, 105, 92],
+        textColor: 255,
+        fontSize: 8.5,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      footStyles: {
+        fillColor: [241, 245, 249],
+        textColor: [15, 23, 42],
+        fontSize: 8.5,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      bodyStyles: {
+        fontSize: 8,
+        textColor: [30, 41, 59]
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 10 },
+        1: { halign: 'center', cellWidth: 22, fontStyle: 'bold' },
+        2: { cellWidth: 46, fontStyle: 'bold' },
+        3: { cellWidth: 38 },
+        4: { halign: 'center', cellWidth: 13 },
+        5: { halign: 'center', cellWidth: 15, fontStyle: 'bold', textColor: [21, 128, 61] },
+        6: { halign: 'center', cellWidth: 15 },
+        7: { halign: 'center', cellWidth: 15 },
+        8: { halign: 'center', cellWidth: 16 },
+        9: { halign: 'center', cellWidth: 15 },
+        10: { halign: 'center', cellWidth: 15 },
+        11: { halign: 'center', cellWidth: 17, fontStyle: 'bold' },
+        12: { halign: 'center', cellWidth: 32 }
+      },
+      didDrawPage: function (data) {
+        const pageCount = doc.internal.getNumberOfPages();
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Dokumen Resmi PT Fadiya Kencana | Halaman ${data.pageNumber} dari ${pageCount}`, 14, 203);
+      }
+    });
+
+    // 3. TANDA TANGAN
+    const finalY = doc.lastAutoTable.finalY + 10;
+    if (finalY < 175) {
+      doc.setFontSize(9);
+      doc.setTextColor(15, 23, 42);
+
+      doc.text('Dibuat Oleh,', 30, finalY);
+      doc.setFont('helvetica', 'bold');
+      doc.text('HRD & Personalia', 30, finalY + 5);
+      doc.text('( .................................................... )', 30, finalY + 25);
+
+      doc.setFont('helvetica', 'normal');
+      doc.text('Mengetahui & Menyetujui,', 210, finalY);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Pimpinan / Direktur', 210, finalY + 5);
+      doc.text('( .................................................... )', 210, finalY + 25);
+    }
+
+    doc.save(`Laporan_Rekap_Presensi_Kedisiplinan_PT_Fadiya_Kencana_${bulan}.pdf`);
+    showToast('Laporan PDF Rekap Presensi & Kedisiplinan berhasil dicetak!');
+  }
+
+  function downloadExcelTabelAktif() {
+    const table = document.getElementById('dataTable');
+    if (!table) return;
+
+    const currentTabName = document.getElementById('pageTitle')?.innerText || currentTab;
+    const bulan = getBulanSelected();
+    const dept = document.getElementById('filterDept')?.value || 'Semua';
+    const waktu = new Date().toLocaleString('id-ID');
+
+    const clone = table.cloneNode(true);
+    clone.querySelectorAll('button, .btn, input, .dropdown').forEach(el => el.remove());
+
+    const excelHtml = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; }
+          .kop { font-size: 14pt; font-weight: bold; color: #00695c; }
+          .meta { font-size: 9pt; color: #555555; }
+          table { border-collapse: collapse; width: 100%; }
+          th { background-color: #00695c; color: #ffffff; border: 1px solid #004d40; padding: 7px; text-align: center; }
+          td { border: 1px solid #cccccc; padding: 6px; }
+        </style>
+      </head>
+      <body>
+        <div class="kop">PT FADIYA KENCANA - LAPORAN ${currentTabName.toUpperCase()}</div>
+        <div class="meta">Periode: ${bulan} | Departemen: ${dept} | Dicetak: ${waktu}</div>
+        <br>
+        ${clone.outerHTML}
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Laporan_${currentTab}_${bulan}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('File Excel berhasil diunduh!');
+  }
+
+  // ==========================================
+  // ASISTEN AI HRD
+  // ==========================================
+  let riwayatChatAi = [];
+  let aiSedangMenjawab = false;
+
+  function escapeHtmlAi(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // Konversi Markdown sederhana (tebal, daftar, tabel) ke HTML yang aman
+  function markdownSederhana(teks) {
+    const baris = escapeHtmlAi(teks).split('\n');
+    let html = '';
+    let i = 0;
+    const inline = s => s
+      .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+      .replace(/(^|[^*])\*(?!\s)(.+?)\*(?!\*)/g, '$1<i>$2</i>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    while (i < baris.length) {
+      const b = baris[i].trim();
+      if (b.startsWith('|') && i + 1 < baris.length && /^\|?\s*:?-{2,}/.test(baris[i + 1].trim())) {
+        const sel = r => r.trim().replace(/^\||\|$/g, '').split('|').map(c => inline(c.trim()));
+        html += '<table><thead><tr>' + sel(b).map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+        i += 2;
+        while (i < baris.length && baris[i].trim().startsWith('|')) {
+          html += '<tr>' + sel(baris[i]).map(c => `<td>${c}</td>`).join('') + '</tr>';
+          i++;
+        }
+        html += '</tbody></table>';
+        continue;
+      }
+      if (/^[-*•]\s+/.test(b)) {
+        html += '<ul>';
+        while (i < baris.length && /^[-*•]\s+/.test(baris[i].trim())) {
+          html += `<li>${inline(baris[i].trim().replace(/^[-*•]\s+/, ''))}</li>`;
+          i++;
+        }
+        html += '</ul>';
+        continue;
+      }
+      if (/^\d+[.)]\s+/.test(b)) {
+        html += '<ol>';
+        while (i < baris.length && /^\d+[.)]\s+/.test(baris[i].trim())) {
+          html += `<li>${inline(baris[i].trim().replace(/^\d+[.)]\s+/, ''))}</li>`;
+          i++;
+        }
+        html += '</ol>';
+        continue;
+      }
+      if (/^#{1,6}\s+/.test(b)) {
+        html += `<div class="fw-bold mt-2 mb-1">${inline(b.replace(/^#{1,6}\s+/, ''))}</div>`;
+      } else if (b === '') {
+        html += '<div style="height: 6px;"></div>';
+      } else {
+        html += `<div>${inline(b)}</div>`;
+      }
+      i++;
+    }
+    return html;
+  }
+
+  function tambahBubbleAi(html, kelas) {
+    const box = document.getElementById('aiChatBox');
+    const el = document.createElement('div');
+    el.className = `ai-bubble ${kelas}`;
+    el.innerHTML = html;
+    box.appendChild(el);
+    box.scrollTop = box.scrollHeight;
+    return el;
+  }
+
+  function kirimSaranAi(btn) {
+    document.getElementById('aiInput').value = btn.innerText;
+    kirimPertanyaanAi();
+  }
+
+  function resetChatAi() {
+    riwayatChatAi = [];
+    const box = document.getElementById('aiChatBox');
+    box.innerHTML = '';
+    tambahBubbleAi('Percakapan dibersihkan. Silakan ajukan pertanyaan baru tentang data kehadiran karyawan.', 'ai-bot');
+    document.getElementById('aiSaranWrap').classList.remove('d-none');
+  }
+
+  async function kirimPertanyaanAi(e) {
+    if (e) e.preventDefault();
+    if (aiSedangMenjawab) return;
+    const input = document.getElementById('aiInput');
+    const pertanyaan = input.value.trim();
+    if (!pertanyaan) return;
+
+    input.value = '';
+    document.getElementById('aiSaranWrap').classList.add('d-none');
+    tambahBubbleAi(escapeHtmlAi(pertanyaan), 'ai-user');
+    const loading = tambahBubbleAi('<span class="ai-typing"><span></span><span></span><span></span></span> Menganalisis data kehadiran...', 'ai-bot');
+
+    aiSedangMenjawab = true;
+    const btn = document.getElementById('aiKirimBtn');
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/admin/ai/tanya', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ pertanyaan, riwayat: riwayatChatAi })
+      });
+      const json = await res.json().catch(() => ({}));
+      loading.remove();
+
+      if (res.ok && json.status === 'success') {
+        tambahBubbleAi(markdownSederhana(json.jawaban), 'ai-bot');
+        riwayatChatAi.push({ role: 'user', teks: pertanyaan });
+        riwayatChatAi.push({ role: 'model', teks: json.jawaban });
+        riwayatChatAi = riwayatChatAi.slice(-6);
+      } else {
+        tambahBubbleAi(`<i class="fa-solid fa-triangle-exclamation me-1"></i> ${escapeHtmlAi(json.message || 'Asisten AI gagal menjawab.')}`, 'ai-bot ai-error');
+      }
+    } catch (err) {
+      loading.remove();
+      tambahBubbleAi('<i class="fa-solid fa-triangle-exclamation me-1"></i> Gagal terhubung ke server.', 'ai-bot ai-error');
+    } finally {
+      aiSedangMenjawab = false;
+      btn.disabled = false;
+      input.focus();
+    }
+  }
+
+  document.getElementById('modalAsistenAi').addEventListener('shown.bs.modal', () => {
+    document.getElementById('aiInput').focus();
+  });
+
+  window.onload = initData;
+</script>
+
+</body>
+</html>

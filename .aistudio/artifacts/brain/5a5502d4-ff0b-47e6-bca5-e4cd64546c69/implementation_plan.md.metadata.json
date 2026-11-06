@@ -1,0 +1,6 @@
+{
+  "summary": "Rencana komprehensif perbaikan alur login dan metode autentikasi (Sidik Jari, Pengenalan Wajah, dan PIN) untuk aplikasi presensi karyawan pabrik Fadiya Kencana, mencakup pemilihan metode awal, penyimpanan preferensi aman, penguncian otomatis, serta pengaturan keamanan di dashboard.",
+  "updatedAt": "2026-10-20T09:49:01.135707704Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

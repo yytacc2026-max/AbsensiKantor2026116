@@ -1,0 +1,23 @@
+{
+  "name": "absensi-kantor-backend",
+  "version": "1.0.0",
+  "description": "Backend API Server Node.js untuk Aplikasi Absensi Kantor Android",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "absensi",
+    "android",
+    "nodejs",
+    "express"
+  ],
+  "author": "AI Studio Build",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.22.3",
+    "mysql2": "^3.24.5"
+  }
+}

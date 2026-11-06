@@ -1,0 +1,47 @@
+{
+  "karyawan": [
+    {
+      "id": "K-001",
+      "id_karyawan": "K-001",
+      "nip": "2344669",
+      "nik": "2344669",
+      "nama": "tutuke9",
+      "jk": "L",
+      "jenis_kelamin": "L",
+      "tempat_lahir": "Ambon",
+      "tanggal_lahir": "22/10/2026",
+      "ttl": "Ambon, 22/10/2026",
+      "dept": "IT & Sistem Informasi",
+      "departemen": "IT & Sistem Informasi",
+      "device_id": "-",
+      "created_at": "2026-10-17T06:43:28.020Z"
+    }
+  ],
+  "absensi": [
+    {
+      "id": 1,
+      "id_karyawan": "K-001",
+      "nip": "2344669",
+      "nik": "2344669",
+      "nama": "tutuke9",
+      "dept": "IT & Sistem Informasi",
+      "departemen": "IT & Sistem Informasi",
+      "tanggal": "2026-10-17",
+      "jam_masuk": "13.43",
+      "jam_pulang": "13.43",
+      "tipe": "PULANG",
+      "status": "TERLAMBAT",
+      "foto_masuk_url": "/uploads/selfie_2344669_2026-10-17_masuk_1792219412996.jpg",
+      "foto_pulang_url": "/uploads/selfie_2344669_2026-10-17_pulang_1792219416288.jpg",
+      "created_at": "2026-10-17T06:43:32.999Z"
+    }
+  ],
+  "pengajuan_izin": [],
+  "pengaturan_kantor": {
+    "jam_masuk": "08:00",
+    "batas_terlambat": "08:00",
+    "jam_pulang": "17:00",
+    "pengumuman": "Pengumuman: Jam kerja resmi kantor dimulai pukul 08:00 WIB.",
+    "total_karyawan": 1
+  }
+}

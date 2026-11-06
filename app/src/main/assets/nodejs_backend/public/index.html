@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fadiya Kencana - HRIS & Dashboard Presensi Modern</title>
+  <!-- Google Fonts & Bootstrap 5 & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CDN jsPDF & jsPDF-AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    :root {
+      --primary-teal: #00695c;
+      --primary-teal-hover: #004d40;
+      --primary-teal-light: #e0f2f1;
+      --bg-body: #f8fafc;
+      --sidebar-bg: #0f172a;
+      --card-border: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      min-height: 100vh;
+      background-color: var(--sidebar-bg);
+      color: #fff;
+      border-right: 1px solid #1e293b;
+    }
+    .sidebar .brand-badge {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .sidebar .nav-link {
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      transition: all 0.2s ease;
+    }
+    .sidebar .nav-link:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+    .sidebar .nav-link.active {
+      background: linear-gradient(135deg, #00695c 0%, #004d40 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3);
+    }
+
+    /* Modern Card & Stat Widgets */
+    .card-modern {
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 16px rgba(0, 0, 0, 0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-modern:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .stat-widget {
+      padding: 20px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .stat-icon.blue { background-color: #e0f2fe; color: #0284c7; }
+    .stat-icon.green { background-color: #dcfce7; color: #16a34a; }
+    .stat-icon.amber { background-color: #fef3c7; color: #d97706; }
+    .stat-icon.red { background-color: #ffe4e6; color: #e11d48; }
+
+    /* Custom Table Styling */
+    .table-custom {
+      margin-bottom: 0;
+    }
+    .table-custom thead th {
+      background-color: #f8fafc;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #64748b;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .table-custom tbody td {
+      padding: 14px 18px;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    .table-custom tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Avatars & Badges */
+    .avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #00695c;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+    .badge-dept {
+      background-color: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+
+    /* Soft Pastel Status Pills */
+    .pill-status {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .pill-status.hadir { background-color: #dcfce7; color: #15803d; }
+    .pill-status.terlambat { background-color: #ffe4e6; color: #be123c; }
+    .pill-status.izin { background-color: #fef3c7; color: #b45309; }
+
+    /* Buttons */
+    .btn-teal {
+      background-color: var(--primary-teal);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    .btn-teal:hover {
+      background-color: var(--primary-teal-hover);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 105, 92, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- SIDEBAR NAVIGASI -->
+    <div class="col-md-2 sidebar p-3">
+      <div class="brand-badge d-flex align-items-center mb-4">
+        <img src="logo.png" alt="Logo Fadiya Kencana" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; background: #fff; padding: 2px; object-fit: contain;">
+        <div>
+          <h6 class="fw-bold text-white mb-0" style="font-size: 13px; letter-spacing: 0.5px;">FADIYA KENCANA</h6>
+          <small style="font-size: 10px; color: #94a3b8;">HRIS & Presensi Modern</small>
+        </div>
+      </div>
+
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="#" id="navKaryawan" onclick="switchTab('karyawan')">
+            <i class="fa-solid fa-users me-2"></i> Master Karyawan
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="navRekapBulanan" onclick="switchTab('rekap_bulanan')">
+            <i class="fa-solid fa-chart-pie me-2"></i> Rekap Total Bulanan
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="navLogHarian" onclick="switchTab('log_harian')">
+            <i class="fa-solid fa-calendar-days me-2"></i> Log Presensi Harian
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- KONTEN UTAMA -->
+    <div class="col-md-10 p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3 class="fw-extrabold text-dark mb-1" id="pageTitle" style="letter-spacing: -0.5px;">Data Master Karyawan</h3>
+          <p class="text-muted small mb-0">Kelola identitas karyawan, input izin/sakit, dan rekapitulasi presensi bulanan</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-danger fw-semibold px-3 py-2 btn-sm" onclick="resetSemuaData()" title="Bersihkan Semua Data ke 0">
+            <i class="fa-solid fa-trash-arrow-up me-1"></i> Kosongkan Data (Reset 0)
+          </button>
+          <button class="btn btn-warning text-dark fw-bold px-3 py-2 btn-sm" data-bs-toggle="modal" data-bs-target="#modalInputIzin">
+            <i class="fa-solid fa-file-signature me-1"></i> Input Izin / Sakit (Admin)
+          </button>
+          <button class="btn btn-teal px-3 py-2 btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahKaryawan" id="btnTambah">
+            <i class="fa-solid fa-user-plus me-1"></i> Tambah Karyawan Baru
+          </button>
+        </div>
+      </div>
+
+      <!-- KARTU RINGKASAN STATISTIK ELEGANT -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Total Karyawan</div>
+              <div class="h3 fw-bold text-dark mb-0" id="statTotalKaryawan">0</div>
+            </div>
+            <div class="stat-icon blue">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Hadir Bulan Ini</div>
+              <div class="h3 fw-bold text-success mb-0" id="statHadirBulanIni">0</div>
+            </div>
+            <div class="stat-icon green">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Izin / Sakit Bulan Ini</div>
+              <div class="h3 fw-bold text-warning mb-0" id="statIzinBulanIni">0</div>
+            </div>
+            <div class="stat-icon amber">
+              <i class="fa-solid fa-hospital-user"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-widget card-modern">
+            <div>
+              <div class="small fw-semibold text-muted mb-1">Terlambat Bulan Ini</div>
+              <div class="h3 fw-bold text-danger mb-0" id="statTerlambatBulanIni">0</div>
+            </div>
+            <div class="stat-icon red">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL FILTER LENGKAP -->
+      <div class="card-modern p-3 mb-4">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-4">
+            <label class="form-label small fw-bold text-secondary">Filter Departemen:</label>
+            <select class="form-select form-select-sm" id="filterDept" onchange="applyFilters()">
+              <option value="SEMUA">-- Semua Departemen --</option>
+              <option value="Produksi Pabrik">Produksi Pabrik</option>
+              <option value="IT & Sistem Informasi">IT & Sistem Informasi</option>
+              <option value="Human Resources (HR)">Human Resources (HR)</option>
+              <option value="Keuangan & Akuntansi">Keuangan & Akuntansi</option>
+              <option value="Operasional & Logistik">Operasional & Logistik</option>
+              <option value="Quality Control (QC)">Quality Control (QC)</option>
+              <option value="Maintenance & Teknik">Maintenance & Teknik</option>
+              <option value="Gudang & Material">Gudang & Material</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-secondary">Filter Bulan Rekap:</label>
+            <input type="month" class="form-control form-control-sm" id="filterBulan" onchange="initData()">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-secondary">Pencarian Kata Kunci:</label>
+            <input type="text" class="form-control form-control-sm" id="searchKeyword" placeholder="Cari NIP / Nama..." onkeyup="applyFilters()">
+          </div>
+
+          <div class="col-md-2 text-end pt-4 d-flex gap-1">
+            <button class="btn btn-outline-danger w-50 fw-semibold btn-sm py-1" onclick="downloadPDF()" title="Cetak File PDF">
+              <i class="fa-solid fa-file-pdf me-1"></i> PDF
+            </button>
+            <button class="btn btn-outline-success w-50 fw-semibold btn-sm py-1" onclick="downloadCSV()" title="Export CSV / Excel">
+              <i class="fa-solid fa-file-excel me-1"></i> Excel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABEL DATA -->
+      <div class="card-modern overflow-hidden">
+        <div class="table-responsive">
+          <table class="table table-custom table-hover align-middle" id="dataTable">
+            <thead>
+              <tr id="tableHeader">
+                <th>NIP</th>
+                <th>Nama Lengkap</th>
+                <th>L/P</th>
+                <th>Tempat, Tgl Lahir</th>
+                <th>Departemen</th>
+                <th>Aksi / Reset HP</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Data diisi otomatis dari Server Node.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TAMBAH KARYAWAN -->
+<div class="modal fade" id="modalTambahKaryawan" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold">Tambah Karyawan Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="formTambah" onsubmit="tambahKaryawan(event)">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">NIP / NIK</label>
+            <input type="text" class="form-control" id="addNip" placeholder="Contoh: KWY005" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Nama Lengkap</label>
+            <input type="text" class="form-control" id="addNama" placeholder="Nama Karyawan" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Jenis Kelamin</label>
+            <select class="form-select" id="addJk">
+              <option value="L">Laki-laki</option>
+              <option value="P">Perempuan</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Tempat, Tanggal Lahir</label>
+            <input type="text" class="form-control" id="addTtl" placeholder="Contoh: Surakarta, 15/01/1998">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Departemen / Jabatan</label>
+            <select class="form-select" id="addDept" required>
+              <option value="Produksi Pabrik">Produksi Pabrik</option>
+              <option value="IT & Sistem Informasi">IT & Sistem Informasi</option>
+              <option value="Human Resources (HR)">Human Resources (HR)</option>
+              <option value="Keuangan & Akuntansi">Keuangan & Akuntansi</option>
+              <option value="Operasional & Logistik">Operasional & Logistik</option>
+              <option value="Quality Control (QC)">Quality Control (QC)</option>
+              <option value="Maintenance & Teknik">Maintenance & Teknik</option>
+              <option value="Gudang & Material">Gudang & Material</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-teal w-100 py-2.5 mt-2">
+            Simpan Karyawan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INPUT IZIN / SAKIT OLEH ADMIN -->
+<div class="modal fade" id="modalInputIzin" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header bg-warning bg-opacity-10 border-bottom-0">
+        <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-hospital-user me-2"></i>Input Izin / Sakit Karyawan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="text-muted small">Inputkan keterangan ketidakhadiran (Sakit / Izin / Cuti) bagi karyawan yang tidak berada di lokasi pabrik.</p>
+        <form id="formIzinAdmin" onsubmit="submitIzinAdmin(event)">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Pilih Karyawan</label>
+            <select class="form-select" id="izinKaryawanSelect" required>
+              <option value="">-- Pilih Karyawan --</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Jenis Ketidakhadiran</label>
+            <select class="form-select" id="izinJenisSelect" required>
+              <option value="Sakit">Sakit</option>
+              <option value="Izin">Izin</option>
+              <option value="Cuti">Cuti</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Tanggal Ketidakhadiran</label>
+            <input type="date" class="form-control" id="izinTanggalInput" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Keterangan / Alasan</label>
+            <textarea class="form-control" id="izinAlasanInput" rows="2" placeholder="Contoh: Demam tinggi / Surat Dokter" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-warning w-100 fw-bold py-2.5 mt-2">
+            Simpan Status Izin / Sakit
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL POP-UP LIHAT FOTO SELFIE -->
+<div class="modal fade" id="modalFotoSelfie" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg text-center" style="border-radius: 16px; overflow: hidden;">
+      <div class="modal-header bg-dark text-white border-bottom-0">
+        <h6 class="modal-title fw-bold" id="modalFotoTitle">Foto Absen Karyawan</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <img id="modalFotoImg" src="" alt="Foto Selfie" class="img-fluid rounded-3 shadow-sm border" style="max-height: 420px; object-fit: contain;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  let currentTab = 'karyawan';
+  let masterKaryawan = [];
+  let rekapAbsensi = [];
+
+  const todayDate = new Date();
+  const defaultBulan = todayDate.toISOString().substring(0, 7);
+  document.getElementById('filterBulan').value = defaultBulan;
+  document.getElementById('izinTanggalInput').value = todayDate.toISOString().split('T')[0];
+
+  async function initData() {
+    const bulanSelected = document.getElementById('filterBulan').value || defaultBulan;
+
+    try {
+      const resKaryawan = await fetch(`/api/admin/karyawan?bulan=${bulanSelected}`);
+      if (resKaryawan.ok) {
+        const jsonK = await resKaryawan.json();
+        masterKaryawan = jsonK.data || (Array.isArray(jsonK) ? jsonK : []);
+      }
+
+      populateDropdownKaryawan();
+
+      const resAbsen = await fetch(`/api/admin/absensi?bulan=${bulanSelected}`);
+      if (resAbsen.ok) {
+        const jsonA = await resAbsen.json();
+        rekapAbsensi = jsonA.data || [];
+
+        document.getElementById('statTotalKaryawan').innerText = jsonA.total_karyawan || masterKaryawan.length || 0;
+        document.getElementById('statHadirBulanIni').innerText = jsonA.total_hadir_bulan_ini || 0;
+        document.getElementById('statIzinBulanIni').innerText = jsonA.total_izin_bulan_ini || 0;
+        document.getElementById('statTerlambatBulanIni').innerText = jsonA.total_terlambat_bulan_ini || 0;
+      }
+    } catch (e) {
+      console.error('Koneksi server gagal:', e);
+    }
+
+    applyFilters();
+  }
+
+  function populateDropdownKaryawan() {
+    const select = document.getElementById('izinKaryawanSelect');
+    select.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+    masterKaryawan.forEach(k => {
+      const nip = k.nip || k.nik || k.id;
+      select.innerHTML += `<option value="${nip}">${nip} - ${k.nama} (${k.dept || k.departemen || 'Produksi'})</option>`;
+    });
+  }
+
+  async function resetSemuaData() {
+    if (!confirm('Apakah Anda yakin ingin MEMBERSIHKAN SEMUA DATA (Master Karyawan & Absensi) ke 0?')) return;
+
+    try {
+      const res = await fetch('/api/admin/reset-all', { method: 'DELETE' });
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        alert('Seluruh data di server berhasil dikosongkan!');
+        initData();
+      } else {
+        alert(json.message || 'Gagal mengosongkan data.');
+      }
+    } catch (e) {
+      alert('Terjadi kesalahan koneksi ke server.');
+    }
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('navKaryawan').classList.toggle('active', tab === 'karyawan');
+    document.getElementById('navRekapBulanan').classList.toggle('active', tab === 'rekap_bulanan');
+    document.getElementById('navLogHarian').classList.toggle('active', tab === 'log_harian');
+
+    const titleMap = {
+      'karyawan': 'Data Master Karyawan',
+      'rekap_bulanan': 'Rekapitulasi Total Presensi Bulanan Per Karyawan',
+      'log_harian': 'Log Presensi Harian Karyawan'
+    };
+    document.getElementById('pageTitle').innerText = titleMap[tab] || 'Rekapitulasi Absensi Karyawan';
+    document.getElementById('btnTambah').style.display = tab === 'karyawan' ? 'block' : 'none';
+    
+    const header = document.getElementById('tableHeader');
+    if (tab === 'karyawan') {
+      header.innerHTML = `<th>NIP</th><th>Nama Lengkap</th><th>L/P</th><th>Tempat, Tgl Lahir</th><th>Departemen</th><th>Aksi / Reset HP</th>`;
+    } else if (tab === 'rekap_bulanan') {
+      header.innerHTML = `<th>NIP</th><th>Nama Karyawan</th><th>Departemen</th><th>Periode Bulan</th><th>Total Hadir</th><th>Total Izin</th><th>Total Terlambat</th><th>Rincian Harian</th>`;
+    } else {
+      header.innerHTML = `<th>Tanggal</th><th>NIP</th><th>Nama Lengkap</th><th>Departemen</th><th>Jam Masuk / Keluar</th><th>Foto Swafoto</th><th>Status Presensi</th>`;
+    }
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const deptSelected = document.getElementById('filterDept').value;
+    const bulanSelected = document.getElementById('filterBulan').value || defaultBulan;
+    const searchKeyword = document.getElementById('searchKeyword').value.toLowerCase();
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    if (currentTab === 'karyawan') {
+      let filtered = masterKaryawan.filter(item => {
+        const nipVal = (item.nip || item.nik || '').toLowerCase();
+        const namaVal = (item.nama || '').toLowerCase();
+        const deptVal = item.dept || item.departemen || '';
+
+        const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+        const matchSearch = namaVal.includes(searchKeyword) || nipVal.includes(searchKeyword);
+        return matchDept && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data karyawan. Tambahkan karyawan baru atau lakukan registrasi dari aplikasi.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(k => {
+        const nip = k.nip || k.nik || '-';
+        const initial = k.nama ? k.nama.charAt(0).toUpperCase() : 'K';
+        tbody.innerHTML += `
+          <tr>
+            <td class="fw-bold text-teal" style="color: #00695c;">${nip}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar-circle">${initial}</span>
+                <span class="fw-semibold">${k.nama}</span>
+              </div>
+            </td>
+            <td><span class="badge ${k.jk === 'P' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} px-2.5 py-1">${k.jk || 'L'}</span></td>
+            <td>${k.ttl || '-'}</td>
+            <td><span class="badge badge-dept">${k.dept || k.departemen || 'Produksi Pabrik'}</span></td>
+            <td>
+              <button class="btn btn-outline-warning btn-sm fw-bold px-2.5" onclick="resetHp('${nip}', '${k.nama}')" title="Reset Perangkat HP">
+                <i class="fa-solid fa-mobile-retro me-1"></i> Reset HP
+              </button>
+              <button class="btn btn-outline-danger btn-sm ms-1 px-2.5" onclick="hapusKaryawan('${nip}')" title="Hapus Data Permanen">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    } else if (currentTab === 'rekap_bulanan') {
+      let filtered = masterKaryawan.filter(item => {
+        const nipVal = (item.nip || item.nik || '').toLowerCase();
+        const namaVal = (item.nama || '').toLowerCase();
+        const deptVal = item.dept || item.departemen || '';
+
+        const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+        const matchSearch = namaVal.includes(searchKeyword) || nipVal.includes(searchKeyword);
+        return matchDept && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Belum ada data rekapitulasi bulanan karyawan.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(k => {
+        const nip = k.nip || k.nik || '-';
+        const initial = k.nama ? k.nama.charAt(0).toUpperCase() : 'K';
+        const totalHadir = k.total_hadir_bulan_ini || 0;
+        const totalIzin = k.total_izin_bulan_ini || 0;
+        const totalTerlambat = k.total_terlambat_bulan_ini || 0;
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="fw-bold text-teal" style="color: #00695c;">${nip}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar-circle">${initial}</span>
+                <span class="fw-semibold">${k.nama}</span>
+              </div>
+            </td>
+            <td><span class="badge badge-dept">${k.dept || k.departemen || 'Produksi Pabrik'}</span></td>
+            <td><span class="badge bg-light text-dark border px-2.5 py-1">${bulanSelected}</span></td>
+            <td><span class="pill-status hadir"><i class="fa-solid fa-user-check me-1"></i>${totalHadir} Hari</span></td>
+            <td><span class="pill-status ${totalIzin > 0 ? 'izin' : 'bg-light text-muted'}"><i class="fa-solid fa-file-circle-check me-1"></i>${totalIzin} Hari</span></td>
+            <td><span class="pill-status ${totalTerlambat > 0 ? 'terlambat' : 'bg-light text-muted'}"><i class="fa-solid fa-clock-rotate-left me-1"></i>${totalTerlambat} Hari</span></td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm fw-semibold px-2.5" onclick="viewUserLog('${nip}')">
+                <i class="fa-solid fa-list-check me-1"></i> Lihat Log
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    } else {
+      // LOG HARIAN
+      let filtered = rekapAbsensi.filter(item => {
+        const nipVal = (item.nip || item.nik || '').toLowerCase();
+        const namaVal = (item.nama || '').toLowerCase();
+        const deptVal = item.dept || item.departemen || '';
+
+        const matchDept = (deptSelected === 'SEMUA' || deptVal === deptSelected);
+        const matchBulan = !bulanSelected || (item.tanggal && item.tanggal.startsWith(bulanSelected));
+        const matchSearch = namaVal.includes(searchKeyword) || nipVal.includes(searchKeyword);
+        return matchDept && matchBulan && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">Belum ada log presensi harian untuk bulan ${bulanSelected}.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(a => {
+        const nip = a.nip || a.nik || '-';
+        const initial = a.nama ? a.nama.charAt(0).toUpperCase() : 'K';
+
+        let pillClass = 'hadir';
+        const upperStatus = (a.status || 'HADIR').toUpperCase();
+        if (['SAKIT', 'IZIN', 'CUTI'].includes(upperStatus)) {
+          pillClass = 'izin';
+        } else if (upperStatus === 'TERLAMBAT') {
+          pillClass = 'terlambat';
+        }
+
+        const jamInfo = (a.jam_masuk || '-') + ' / ' + (a.jam_pulang || '-');
+
+        let fotoMasukBtn = (a.foto_masuk_url && a.foto_masuk_url !== '-')
+          ? `<button class="btn btn-sm btn-outline-success py-1 px-2.5 fw-semibold" onclick="showFotoModal('${a.foto_masuk_url}', '${a.nama}', 'Foto Absen Masuk')"><i class="fa-solid fa-camera me-1"></i>Foto Masuk</button>`
+          : '';
+        let fotoPulangBtn = (a.foto_pulang_url && a.foto_pulang_url !== '-')
+          ? `<button class="btn btn-sm btn-outline-danger py-1 px-2.5 fw-semibold ms-1" onclick="showFotoModal('${a.foto_pulang_url}', '${a.nama}', 'Foto Absen Pulang')"><i class="fa-solid fa-camera me-1"></i>Foto Pulang</button>`
+          : '';
+
+        let fotoCol = (fotoMasukBtn || fotoPulangBtn)
+          ? (fotoMasukBtn + fotoPulangBtn)
+          : `<span class="badge bg-light text-muted border px-2.5 py-1"><i class="fa-solid fa-image-slash me-1"></i>Tanpa Foto</span>`;
+
+        tbody.innerHTML += `
+          <tr>
+            <td><i class="fa-regular fa-calendar-days me-1 text-muted"></i> ${a.tanggal}</td>
+            <td class="fw-bold">${nip}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar-circle">${initial}</span>
+                <span class="fw-semibold">${a.nama}</span>
+              </div>
+            </td>
+            <td><span class="badge badge-dept">${a.dept || a.departemen || 'Produksi Pabrik'}</span></td>
+            <td><span class="small fw-semibold text-dark">${jamInfo}</span></td>
+            <td>${fotoCol}</td>
+            <td><span class="pill-status ${pillClass}">${upperStatus}</span> ${a.alasan ? `<small class="text-muted ms-1">(${a.alasan})</small>` : ''}</td>
+          </tr>
+        `;
+      });
+    }
+  }
+
+  function showFotoModal(fotoUrl, nama, judul) {
+    document.getElementById('modalFotoTitle').innerText = `${judul} - ${nama}`;
+    document.getElementById('modalFotoImg').src = fotoUrl;
+    const modalEl = document.getElementById('modalFotoSelfie');
+    const modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.show();
+  }
+
+  function viewUserLog(nip) {
+    document.getElementById('searchKeyword').value = nip;
+    switchTab('log_harian');
+  }
+
+  async function submitIzinAdmin(e) {
+    e.preventDefault();
+    const nip = document.getElementById('izinKaryawanSelect').value;
+    const jenis = document.getElementById('izinJenisSelect').value;
+    const tanggal = document.getElementById('izinTanggalInput').value;
+    const alasan = document.getElementById('izinAlasanInput').value.trim();
+
+    if (!nip) {
+      alert('Pilih karyawan terlebih dahulu!');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/izin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nip: nip,
+          jenis_izin: jenis,
+          tanggal: tanggal,
+          alasan: alasan
+        })
+      });
+
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        alert(json.message || 'Status Izin/Sakit berhasil disimpan!');
+        initData();
+
+        const modalEl = document.getElementById('modalInputIzin');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modalInstance.hide();
+        document.getElementById('formIzinAdmin').reset();
+        document.getElementById('izinTanggalInput').value = new Date().toISOString().split('T')[0];
+      } else {
+        alert(json.message || 'Gagal menyimpan izin.');
+      }
+    } catch (err) {
+      alert('Terjadi kesalahan koneksi ke server.');
+    }
+  }
+
+  async function hapusKaryawan(nip) {
+    if (!confirm(`Apakah Anda yakin ingin menghapus karyawan NIP ${nip} secara PERMANEN?`)) return;
+
+    try {
+      const res = await fetch(`/api/admin/karyawan/${nip}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        alert(`Karyawan NIP ${nip} berhasil dihapus!`);
+        initData();
+      } else {
+        alert(json.message || 'Gagal menghapus karyawan.');
+      }
+    } catch (e) {
+      alert('Terjadi kesalahan koneksi ke server.');
+    }
+  }
+
+  async function resetHp(nip, nama) {
+    if (!confirm(`Lepas tautan perangkat HP untuk ${nama} (NIP ${nip})?`)) return;
+
+    try {
+      const res = await fetch(`/api/admin/karyawan/${nip}/reset-device`, { method: 'PUT' });
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        alert(`Berhasil mereset tautan HP untuk NIP ${nip}.`);
+        initData();
+      } else {
+        alert(json.message || 'Gagal reset HP.');
+      }
+    } catch (e) {
+      alert('Terjadi kesalahan koneksi ke server.');
+    }
+  }
+
+  async function tambahKaryawan(e) {
+    e.preventDefault();
+    const nip = document.getElementById('addNip').value.trim();
+    const nama = document.getElementById('addNama').value.trim();
+    const jk = document.getElementById('addJk').value;
+    const ttl = document.getElementById('addTtl').value.trim();
+    const dept = document.getElementById('addDept').value;
+
+    const parts = ttl.split(',');
+    const tempatLahir = parts[0] ? parts[0].trim() : '-';
+    const tanggalLahir = parts[1] ? parts[1].trim() : '-';
+
+    try {
+      const res = await fetch('/api/admin/karyawan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nik: nip,
+          nama: nama,
+          jenis_kelamin: jk,
+          tempat_lahir: tempatLahir,
+          tanggal_lahir: tanggalLahir,
+          jabatan: dept,
+          device_id: '-'
+        })
+      });
+
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
+        alert('Data karyawan berhasil tersimpan!');
+        initData();
+        
+        const modalEl = document.getElementById('modalTambahKaryawan');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modalInstance.hide();
+        document.getElementById('formTambah').reset();
+      } else {
+        alert(json.message || 'Gagal menambahkan karyawan.');
+      }
+    } catch (e) {
+      alert('Terjadi kesalahan koneksi ke server.');
+    }
+  }
+
+  function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const deptFilter = document.getElementById('filterDept').value;
+    const bulanFilter = document.getElementById('filterBulan').value || defaultBulan;
+
+    doc.setFontSize(16);
+    doc.text(`LAPORAN ${currentTab.toUpperCase()} KARYAWAN PABRIK`, 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Filter Departemen : ${deptFilter}`, 14, 22);
+    doc.text(`Periode Rekap     : ${bulanFilter}`, 14, 27);
+    doc.text(`Tanggal Cetak     : ${new Date().toLocaleDateString('id-ID')}`, 14, 32);
+
+    doc.autoTable({
+      html: '#dataTable',
+      startY: 38,
+      theme: 'grid',
+      headStyles: { fillColor: [0, 105, 92] }
+    });
+
+    doc.save(`Laporan_${currentTab}_${deptFilter}_${bulanFilter}.pdf`);
+  }
+
+  function downloadCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    if (currentTab === 'karyawan') {
+      csvContent += "NIP,Nama,L/P,Tempat Tgl Lahir,Departemen\n";
+      masterKaryawan.forEach(k => {
+        csvContent += `"${k.nip || k.nik}","${k.nama}","${k.jk}","${k.ttl}","${k.dept || k.departemen}"\n`;
+      });
+    } else if (currentTab === 'rekap_bulanan') {
+      csvContent += "NIP,Nama Karyawan,Departemen,Bulan,Total Hadir,Total Izin,Total Terlambat\n";
+      masterKaryawan.forEach(k => {
+        csvContent += `"${k.nip || k.nik}","${k.nama}","${k.dept || k.departemen}","${document.getElementById('filterBulan').value}","${k.total_hadir_bulan_ini || 0}","${k.total_izin_bulan_ini || 0}","${k.total_terlambat_bulan_ini || 0}"\n`;
+      });
+    } else {
+      csvContent += "Tanggal,NIP,Nama,Departemen,Jam,Status\n";
+      rekapAbsensi.forEach(a => {
+        csvContent += `"${a.tanggal}","${a.nip || a.nik}","${a.nama}","${a.dept || a.departemen}","${a.jam_masuk || '-'} / ${a.jam_pulang || '-'}","${a.status}"\n`;
+      });
+    }
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Export_${currentTab}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  window.onload = initData;
+</script>
+
+</body>
+</html>

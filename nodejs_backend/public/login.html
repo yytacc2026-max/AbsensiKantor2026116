@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Portal Admin - Fadiya Kencana</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-teal: #059669;
+      --primary-teal-dark: #042f24;
+      --primary-teal-light: #10b981;
+      --bg-surface: #061a14;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      background-color: #04120e;
+      background-image:
+        radial-gradient(circle at 18% 15%, rgba(16, 185, 129, 0.18), transparent 36%),
+        radial-gradient(circle at 82% 85%, rgba(5, 150, 105, 0.25), transparent 40%);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: var(--text-main);
+    }
+
+    .login-card {
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 30px;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.70), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      max-width: 940px;
+      width: 100%;
+      background: #071f18;
+    }
+
+    .brand-panel {
+      background: linear-gradient(155deg, #042f24 0%, #064e3b 35%, #059669 75%, #10b981 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-panel::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(110, 231, 183, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .brand-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -40px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, transparent 75%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .brand-logo-wrap {
+      width: 88px;
+      height: 88px;
+      border-radius: 24px;
+      background: #ffffff;
+      padding: 10px;
+      box-shadow: 0 14px 28px rgba(4, 47, 36, 0.40);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .feature-pill {
+      background: rgba(4, 38, 28, 0.60);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(52, 211, 153, 0.30);
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 12.5px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    .input-group-modern {
+      position: relative;
+    }
+
+    .input-group-modern .input-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      z-index: 4;
+    }
+
+    .input-group-modern .toggle-pw {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      padding: 4px 6px;
+      z-index: 4;
+    }
+
+    .form-control-modern {
+      border-radius: 999px;
+      padding: 14px 44px 14px 48px;
+      border: 1.5px solid rgba(52, 211, 153, 0.22);
+      font-size: 14px;
+      background-color: #041410;
+      color: #f8fafc;
+      transition: all 0.25s ease;
+    }
+    .form-control-modern::placeholder {
+      color: #64748b;
+    }
+
+    .form-control-modern:focus {
+      background-color: #07221a;
+      color: #ffffff;
+      border-color: #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-teal {
+      background: linear-gradient(135deg, #064e3b 0%, #059669 48%, #10b981 100%);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 14px;
+      font-weight: 700;
+      font-size: 14.5px;
+      letter-spacing: 0.3px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 26px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-teal:hover {
+      background: linear-gradient(135deg, #04382a 0%, #047857 48%, #059669 100%);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(16, 185, 129, 0.48);
+    }
+
+    .text-dark { color: #f8fafc !important; }
+    .text-muted { color: #94a3b8 !important; }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="row g-0">
+    <!-- Panel Branding Kiri -->
+    <div class="col-md-5 brand-panel text-white p-5 d-flex flex-column justify-content-between position-relative">
+      <svg style="position: absolute; right: -30px; bottom: 0; width: 320px; height: 320px; pointer-events: none; opacity: 0.45; z-index: 1;" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 160 C70 110, 180 220, 320 130" stroke="#6ee7b7" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+        <path d="M0 200 C90 150, 200 260, 320 170" stroke="#a7f3d0" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+        <path d="M20 240 C110 190, 220 290, 320 210" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" opacity="0.40"/>
+        <circle cx="260" cy="210" r="55" stroke="#6ee7b7" stroke-width="1.8" opacity="0.35"/>
+        <circle cx="260" cy="210" r="35" stroke="#34d399" stroke-width="1.8" opacity="0.45"/>
+        <circle cx="260" cy="210" r="16" stroke="#a7f3d0" stroke-width="2" fill="rgba(16, 185, 129, 0.15)" opacity="0.65"/>
+        <circle cx="260" cy="210" r="4" fill="#ffffff" opacity="0.95"/>
+      </svg>
+      <div style="position: relative; z-index: 2;">
+        <div class="brand-logo-wrap mb-4">
+          <img src="logo.png" alt="Logo Fadiya Kencana" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-building-user fa-2x text-success\'></i>';">
+        </div>
+        <span class="badge bg-white bg-opacity-10 border border-white border-opacity-25 text-white px-3 py-1.5 rounded-pill mb-3 fw-semibold" style="font-size: 11px;">
+          PORTAL HRIS & PRESENSI
+        </span>
+        <h3 class="fw-extrabold mb-2" style="letter-spacing: -0.5px;">PT. Fadiya Kencana</h3>
+        <p class="small opacity-75 mb-4">
+          Pusat kendali presensi karyawan terintegrasi dengan pemantauan lokasi GPS realtime dan verifikasi swafoto.
+        </p>
+      </div>
+
+      <div class="d-flex flex-column gap-2 mt-2" style="position: relative; z-index: 2;">
+        <div class="feature-pill">
+          <i class="fa-solid fa-location-dot text-info"></i>
+          <span>Pemantauan titik lokasi GPS realtime saat absen</span>
+        </div>
+        <div class="feature-pill">
+          <i class="fa-solid fa-camera text-warning"></i>
+          <span>Verifikasi bukti swafoto ber-watermark otomatis</span>
+        </div>
+        <div class="feature-pill">
+          <i class="fa-solid fa-file-export text-light"></i>
+          <span>Rekapitulasi bulanan, persetujuan izin & ekspor laporan</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Form Login Kanan -->
+    <div class="col-md-7 p-5 d-flex flex-column justify-content-center">
+      <div class="mb-4">
+        <h4 class="fw-bold mb-1">Masuk ke Dashboard Admin</h4>
+        <p class="text-muted small mb-0">Masukkan kredensial administrator untuk mengelola data presensi.</p>
+      </div>
+
+      <div id="errorAlert" class="alert alert-danger d-none small rounded-3 py-2.5 px-3 border-0 shadow-sm"></div>
+
+      <form id="loginForm">
+        <div class="mb-3">
+          <label class="form-label" for="username">Username</label>
+          <div class="input-group-modern">
+            <i class="fa-regular fa-user input-icon"></i>
+            <input type="text" id="username" class="form-control form-control-modern" placeholder="Masukkan username admin" autocomplete="username" required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="password">Kata Sandi</label>
+          <div class="input-group-modern">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="password" class="form-control form-control-modern" placeholder="Masukkan kata sandi" autocomplete="current-password" required>
+            <button type="button" class="toggle-pw" onclick="togglePassword()" title="Tampilkan/Sembunyikan Sandi">
+              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-teal w-100" id="btnSubmit">
+          <i class="fa-solid fa-right-to-bracket me-2"></i> Masuk Dashboard
+        </button>
+      </form>
+
+      <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center text-muted" style="font-size: 12px;">
+        <span><i class="fa-solid fa-shield-halved text-success me-1"></i> Terhubung ke Database MySQL</span>
+        <span>v2.0 Realtime GPS</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePassword() {
+    const pwInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+    if (pwInput.type === 'password') {
+      pwInput.type = 'text';
+      eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+      pwInput.type = 'password';
+      eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value.trim();
+    const btn = document.getElementById('btnSubmit');
+    const alertBox = document.getElementById('errorAlert');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Memverifikasi...';
+    alertBox.classList.add('d-none');
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+      const data = await res.json();
+
+      if (res.ok && data.status === 'success') {
+        window.location.href = '/';
+      } else {
+        alertBox.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> ' + (data.message || 'Username atau kata sandi tidak sesuai.');
+        alertBox.classList.remove('d-none');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i> Masuk Dashboard';
+      }
+    } catch (err) {
+      alertBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> Gagal terhubung ke server. Pastikan layanan Node.js aktif.';
+      alertBox.classList.remove('d-none');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-right-to-bracket me-2"></i> Masuk Dashboard';
+    }
+  });
+</script>
+
+</body>
+</html>
